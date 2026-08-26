@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-ivory: #fbf6ea;
+  --color-ivory-deep: #f5ebd8;
+  --color-card: #fffdf7;
+  --color-maroon: #7a1620;
+  --color-maroon-deep: #5c0f17;
+  --color-saffron: #e08a2c;
+  --color-saffron-deep: #c56a16;
+  --color-gold: #c9a24b;
+  --color-ink: #3b2a20;
+  --color-ink-soft: #6b5744;
+  --color-line: #e8dcc4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ivory);
+  color: var(--color-ink);
+}
+
+::selection {
+  background-color: var(--color-gold);
+  color: var(--color-maroon-deep);
+}
+
+/* Soft "diya glow" radial accent — used sparingly behind hero/CTA sections. */
+.diya-glow {
+  background-image: radial-gradient(
+    circle at 50% 30%,
+    rgba(224, 138, 44, 0.18),
+    rgba(224, 138, 44, 0) 60%
+  );
+}
+
+/* Hairline section divider matching the --color-line token. */
+.hairline {
+  border-color: var(--color-line);
+}
+
+.container-page {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}

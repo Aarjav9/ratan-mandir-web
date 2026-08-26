@@ -1,0 +1,174 @@
+// Ratan Mandir — Prisma schema
+// PostgreSQL is the target database (see DATABASE_URL in .env).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum CategoryType {
+  RUDRAKSHA
+  GEMSTONE
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model Product {
+  id           String       @id @default(cuid())
+  slug         String       @unique
+  name         String
+  description  String
+  basePrice    Decimal      @db.Decimal(10, 2)
+  mrp          Decimal?     @db.Decimal(10, 2)
+  categoryType CategoryType
+  mukhiNumber  Int?
+  gemstoneName String?
+  origin       String?
+  isCertified  Boolean      @default(true)
+  isBestseller Boolean      @default(false)
+  badge        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  variants   ProductVariant[]
+  images     ProductImage[]
+  reviews    Review[]
+  orderItems OrderItem[]
+
+  @@index([categoryType])
+  @@index([mukhiNumber])
+}
+
+model ProductVariant {
+  id            String   @id @default(cuid())
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  label         String
+  priceOverride Decimal? @db.Decimal(10, 2)
+  stock         Int      @default(0)
+
+  orderItems OrderItem[]
+
+  @@index([productId])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  // Points to a local /public placeholder path until real product
+  // photography is supplied by the client.
+  url       String
+  altText   String
+  position  Int     @default(0)
+
+  @@index([productId])
+}
+
+// One row per mukhi (1-14), used to power the "Shop by Mukhi" homepage
+// section and the /shop/[mukhi] listing pages.
+model MukhiInfo {
+  id           String @id @default(cuid())
+  mukhiNumber  Int    @unique
+  deity        String
+  significance String
+}
+
+// The nine Navratna gemstones, used to power the homepage "Navratna" grid.
+model GemstoneInfo {
+  id           String @id @default(cuid())
+  name         String
+  sanskritName String
+  planet       String
+  colorHex     String
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  // Nullable: real authentication (password hashing, OTP, magic-link, etc.)
+  // is a follow-up build item — see README "before going live" checklist.
+  passwordHash String?
+  createdAt    DateTime @default(now())
+
+  addresses Address[]
+  orders    Order[]
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  line1      String
+  line2      String?
+  city       String
+  state      String
+  pincode    String
+  phone      String
+
+  orders Order[]
+
+  @@index([customerId])
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  // Nullable to support guest checkout (no Customer account required).
+  customerId        String?
+  customer          Customer?   @relation(fields: [customerId], references: [id])
+  status            OrderStatus @default(PENDING)
+  totalAmount       Decimal     @db.Decimal(10, 2)
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  shippingAddressId String?
+  shippingAddress   Address?    @relation(fields: [shippingAddressId], references: [id])
+  createdAt         DateTime    @default(now())
+
+  items OrderItem[]
+
+  @@index([customerId])
+  @@index([status])
+}
+
+model OrderItem {
+  id              String          @id @default(cuid())
+  orderId         String
+  order           Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId       String
+  product         Product         @relation(fields: [productId], references: [id])
+  variantId       String?
+  variant         ProductVariant? @relation(fields: [variantId], references: [id])
+  quantity        Int
+  priceAtPurchase Decimal         @db.Decimal(10, 2)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Review {
+  id           String   @id @default(cuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  customerName String
+  rating       Int
+  comment      String
+  // Seed-data reviews are illustrative sample content, not real customer
+  // reviews — they are seeded with isVerified: false for exactly this reason.
+  isVerified   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([productId])
+}
