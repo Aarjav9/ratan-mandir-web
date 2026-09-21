@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import ProductGallery from "@/components/ProductGallery";
@@ -6,9 +7,42 @@ import ProductPurchasePanel from "@/components/ProductPurchasePanel";
 import ProductTabs from "@/components/ProductTabs";
 import ProductCard from "@/components/ProductCard";
 import TestimonialCard from "@/components/TestimonialCard";
+import { getRatingsMap } from "@/lib/ratings";
+import { getCategoryBySlug } from "@/lib/categoryTaxonomy";
+import type { CategoryType } from "@prisma/client";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 interface ProductPageProps {
   params: { slug: string };
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const product = await prisma.product.findUnique({
+    where: { slug: params.slug },
+    include: { images: { orderBy: { position: "asc" }, take: 1 } },
+  });
+
+  if (!product) {
+    return { title: "Product Not Found — Ratan Mandir" };
+  }
+
+  const title = `${product.name} | Ratan Mandir`;
+  const description = product.description.slice(0, 155);
+  const image = product.images[0]?.url;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `${SITE_URL}/products/${product.slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/products/${product.slug}`,
+      images: image ? [{ url: image }] : undefined,
+      type: "website",
+    },
+  };
 }
 
 async function getProductPageData(slug: string) {
@@ -21,7 +55,7 @@ async function getProductPageData(slug: string) {
     },
   });
 
-  if (!product) return { product: null, related: [] };
+  if (!product) return { product: null, related: [], relatedRatings: {} };
 
   const related = await prisma.product.findMany({
     where: {
@@ -31,45 +65,140 @@ async function getProductPageData(slug: string) {
         { categoryType: product.categoryType },
       ].filter(Boolean) as object[],
     },
-    include: { images: { orderBy: { position: "asc" }, take: 1 } },
+    include: {
+      images: { orderBy: { position: "asc" }, take: 1 },
+      variants: { take: 1 },
+    },
     take: 4,
   });
 
-  return { product, related };
+  const relatedRatings = await getRatingsMap(related.map((p) => p.id));
+
+  return { product, related, relatedRatings };
 }
+
+interface CategoryCopyEntry {
+  benefits: (product: { mukhiNumber: number | null; gemstoneName: string | null }) => string;
+  howToWear: string;
+  howToWearLabel: string;
+  certLabel: string;
+}
+
+const CATEGORY_COPY: Record<CategoryType, CategoryCopyEntry> = {
+  RUDRAKSHA: {
+    benefits: (p) =>
+      `Traditionally, ${
+        p.mukhiNumber ? `${p.mukhiNumber} Mukhi Rudraksha` : "this Rudraksha"
+      } is worn to support focus, emotional balance and spiritual practice. Individual experiences vary, and this is not a substitute for medical or professional advice.`,
+    howToWear:
+      "Cleanse with clean water before first wear. Traditionally worn on a red or black thread, or a silver/gold chain, ideally on a Monday morning after a bath. Avoid wearing while sleeping, bathing, or during periods of impurity, per tradition.",
+    howToWearLabel: "How to Wear",
+    certLabel: "mukhi count and natural origin",
+  },
+  GEMSTONE: {
+    benefits: (p) =>
+      `${
+        p.gemstoneName ?? "This gemstone"
+      } is traditionally associated with its ruling planet in Vedic astrology. We recommend consulting a qualified astrologer before wearing any gemstone for astrological purposes.`,
+    howToWear:
+      "Gemstones are traditionally set in a ring or pendant of a metal recommended for the relevant planet, worn on a specific finger and day as advised by an astrologer, after a brief energising ritual.",
+    howToWearLabel: "How to Wear",
+    certLabel: "natural, untreated origin",
+  },
+  ENERGY_STONE: {
+    benefits: () =>
+      "Crystal wearables like this are traditionally associated with grounding, calm and everyday emotional balance. Individual experiences vary, and this is not a substitute for medical or professional advice.",
+    howToWear:
+      "Cleanse under running water before first wear. Worn on either wrist, or kept nearby during meditation. Avoid contact with soaps, perfumes or prolonged water exposure to preserve the stone's finish.",
+    howToWearLabel: "How to Wear",
+    certLabel: "natural origin",
+  },
+  SPIRITUAL_JEWELLERY: {
+    benefits: () =>
+      "A versatile everyday piece, worn as a subtle daily reminder of the symbol it carries and its traditional significance.",
+    howToWear: "Suitable for daily wear. Remove before swimming, bathing or strenuous exercise to preserve the finish.",
+    howToWearLabel: "How to Wear",
+    certLabel: "material and craftsmanship",
+  },
+  KARUNGALI: {
+    benefits: () =>
+      "Karungali (black ebony wood) is traditionally worn for its protective, negativity-repelling properties in Tamil tradition.",
+    howToWear:
+      "Traditionally worn on the wrist or as a mala around the neck. Keep away from prolonged water exposure to preserve the wood's finish.",
+    howToWearLabel: "How to Wear",
+    certLabel: "natural origin",
+  },
+  VASTU: {
+    benefits: () =>
+      "Traditionally placed to support balance of the five elements within a home or workspace, according to Vastu Shastra principles.",
+    howToWear:
+      "Place according to the recommended direction for your space — consult a Vastu practitioner for guidance specific to your home or office layout.",
+    howToWearLabel: "How to Place",
+    certLabel: "material and craftsmanship",
+  },
+  ZODIAC: {
+    benefits: () =>
+      "Traditionally recommended for this zodiac sign in Vedic astrology, worn to support qualities associated with its ruling planet.",
+    howToWear:
+      "We recommend consulting a qualified astrologer to confirm the right piece, metal and timing for your birth chart before wearing.",
+    howToWearLabel: "How to Wear",
+    certLabel: "natural origin",
+  },
+  GIFT_HAMPER: {
+    benefits: () =>
+      "A curated set of spiritual pieces, thoughtfully packaged for gifting on this occasion.",
+    howToWear: "Each item inside the hamper carries its own care instructions — see the individual pieces for details.",
+    howToWearLabel: "What's Inside",
+    certLabel: "materials used",
+  },
+};
 
 function buildTabContent(product: {
   description: string;
-  categoryType: string;
+  categoryType: CategoryType;
   mukhiNumber: number | null;
   gemstoneName: string | null;
   origin: string | null;
   isCertified: boolean;
 }) {
-  const isRudraksha = product.categoryType === "RUDRAKSHA";
+  const copy = CATEGORY_COPY[product.categoryType];
 
   return {
     description: product.description,
-    benefits: isRudraksha
-      ? `Traditionally, ${
-          product.mukhiNumber ? `${product.mukhiNumber} Mukhi Rudraksha` : "this Rudraksha"
-        } is worn to support focus, emotional balance and spiritual practice. Individual experiences vary, and this is not a substitute for medical or professional advice.`
-      : `${
-          product.gemstoneName ?? "This gemstone"
-        } is traditionally associated with its ruling planet in Vedic astrology. We recommend consulting a qualified astrologer before wearing any gemstone for astrological purposes.`,
-    howToWear: isRudraksha
-      ? "Cleanse with clean water before first wear. Traditionally worn on a red or black thread, or a silver/gold chain, ideally on a Monday morning after a bath. Avoid wearing while sleeping, bathing, or during periods of impurity, per tradition."
-      : "Gemstones are traditionally set in a ring or pendant of a metal recommended for the relevant planet, worn on a specific finger and day as advised by an astrologer, after a brief energising ritual.",
+    benefits: copy.benefits(product),
+    howToWear: copy.howToWear,
+    howToWearLabel: copy.howToWearLabel,
     certificate: product.isCertified
-      ? `This product ships with a lab authenticity certificate confirming ${
-          isRudraksha ? "mukhi count and natural origin" : "natural, untreated origin"
-        }. Certificate numbers and lab partner details will be listed per product ahead of launch.`
+      ? `This product ships with a lab authenticity certificate confirming ${copy.certLabel}. Certificate numbers and lab partner details will be listed per product ahead of launch.`
       : "Certification details for this product will be added ahead of launch.",
   };
 }
 
+const CATEGORY_TYPE_TO_TAXONOMY_SLUG: Partial<Record<CategoryType, string>> = {
+  ENERGY_STONE: "energy-stones",
+  SPIRITUAL_JEWELLERY: "spiritual-jewellery",
+  KARUNGALI: "karungali",
+  VASTU: "vastu",
+  ZODIAC: "zodiac",
+  GIFT_HAMPER: "gifting",
+};
+
+function getCategoryCrumb(
+  categoryType: CategoryType,
+  mukhiNumber: number | null
+): { name: string; href: string } {
+  if (categoryType === "RUDRAKSHA" && mukhiNumber) {
+    return { name: `${mukhiNumber} Mukhi Rudraksha`, href: `/shop/${mukhiNumber}` };
+  }
+  if (categoryType === "GEMSTONE") {
+    return { name: "Gemstones", href: "/#navratna" };
+  }
+  const category = getCategoryBySlug(CATEGORY_TYPE_TO_TAXONOMY_SLUG[categoryType] ?? "");
+  return category ? { name: category.label, href: category.href } : { name: "Shop", href: "/" };
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { product, related } = await getProductPageData(params.slug);
+  const { product, related, relatedRatings } = await getProductPageData(params.slug);
 
   if (!product) {
     notFound();
@@ -91,20 +220,67 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const tabContent = buildTabContent(product);
 
+  const totalStock = variants.reduce((sum, v) => sum + v.stock, 0);
+  const avgRating =
+    product.reviews.length > 0
+      ? product.reviews.reduce((sum, r) => sum + r.rating, 0) / product.reviews.length
+      : null;
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: galleryImages.map((img) => `${SITE_URL}${img.url}`),
+    sku: product.id,
+    brand: { "@type": "Brand", name: "Ratan Mandir" },
+    offers: {
+      "@type": "Offer",
+      url: `${SITE_URL}/products/${product.slug}`,
+      priceCurrency: "INR",
+      price: Number(product.basePrice),
+      availability:
+        totalStock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+    ...(avgRating && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: avgRating.toFixed(1),
+        reviewCount: product.reviews.length,
+      },
+    }),
+  };
+
+  const categoryCrumb = getCategoryCrumb(product.categoryType, product.mukhiNumber);
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: categoryCrumb.name, item: `${SITE_URL}${categoryCrumb.href}` },
+      { "@type": "ListItem", position: 3, name: product.name, item: `${SITE_URL}/products/${product.slug}` },
+    ],
+  };
+
   return (
     <div className="container-page py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <nav className="mb-8 font-mulish text-xs text-inkSoft" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-maroon">
           Home
         </Link>
         <span className="mx-2">/</span>
-        {product.categoryType === "RUDRAKSHA" && product.mukhiNumber ? (
-          <Link href={`/shop/${product.mukhiNumber}`} className="hover:text-maroon">
-            {product.mukhiNumber} Mukhi Rudraksha
-          </Link>
-        ) : (
-          <span>Gemstones</span>
-        )}
+        <Link href={categoryCrumb.href} className="hover:text-maroon">
+          {categoryCrumb.name}
+        </Link>
         <span className="mx-2">/</span>
         <span className="text-ink">{product.name}</span>
       </nav>
@@ -172,6 +348,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   mrp: item.mrp?.toString() ?? null,
                   badge: item.badge,
                   images: item.images,
+                  productId: item.id,
+                  rating: relatedRatings[item.id]?.rating ?? null,
+                  reviewCount: relatedRatings[item.id]?.count ?? null,
+                  defaultVariant: item.variants[0]
+                    ? {
+                        id: item.variants[0].id,
+                        label: item.variants[0].label,
+                        price: Number(item.variants[0].priceOverride ?? item.basePrice),
+                      }
+                    : null,
                 }}
               />
             ))}

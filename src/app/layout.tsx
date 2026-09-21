@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { WishlistProvider } from "@/context/WishlistContext";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
 
 const marcellus = Marcellus({
   subsets: ["latin"],
@@ -28,10 +30,22 @@ const mulish = Mulish({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Ratan Mandir — Authentic Rudraksha & Gemstones",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Ratan Mandir — Authentic Rudraksha & Gemstones",
+    template: "%s | Ratan Mandir",
+  },
   description:
     "Ratan Mandir offers lab-certified, authentic Rudraksha beads, malas and Navratna gemstones sourced directly from Nepal, Indonesia and Ceylon.",
+  alternates: { canonical: SITE_URL },
+  openGraph: {
+    siteName: "Ratan Mandir",
+    type: "website",
+    locale: "en_IN",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -40,9 +54,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="font-mulish bg-ivory text-ink antialiased">
         <CartProvider>
           <AuthProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
+            <WishlistProvider>
+              <Header />
+              <main className="pb-16 md:pb-0">{children}</main>
+              <Footer />
+              <ScrollToTopButton />
+            </WishlistProvider>
           </AuthProvider>
         </CartProvider>
       </body>

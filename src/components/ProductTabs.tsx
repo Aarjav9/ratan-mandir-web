@@ -6,23 +6,26 @@ export interface ProductTabsContent {
   description: string;
   benefits: string;
   howToWear: string;
+  howToWearLabel?: string;
   certificate: string;
 }
 
-const TAB_LABELS: { key: keyof ProductTabsContent; label: string }[] = [
-  { key: "description", label: "Description" },
-  { key: "benefits", label: "Benefits" },
-  { key: "howToWear", label: "How to Wear" },
-  { key: "certificate", label: "Certificate" },
-];
-
 export default function ProductTabs({ content }: { content: ProductTabsContent }) {
-  const [activeTab, setActiveTab] = useState<keyof ProductTabsContent>("description");
+  const [activeTab, setActiveTab] = useState<keyof Omit<ProductTabsContent, "howToWearLabel">>(
+    "description"
+  );
+
+  const tabLabels: { key: keyof Omit<ProductTabsContent, "howToWearLabel">; label: string }[] = [
+    { key: "description", label: "Description" },
+    { key: "benefits", label: "Benefits" },
+    { key: "howToWear", label: content.howToWearLabel ?? "How to Wear" },
+    { key: "certificate", label: "Certificate" },
+  ];
 
   return (
     <div className="rounded-card border border-line bg-card shadow-soft">
       <div className="flex flex-wrap border-b border-line">
-        {TAB_LABELS.map((tab) => (
+        {tabLabels.map((tab) => (
           <button
             key={tab.key}
             type="button"

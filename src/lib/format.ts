@@ -8,3 +8,13 @@ export function formatInr(amount: number | string): string {
     maximumFractionDigits: 0,
   }).format(value);
 }
+
+/** Slugifies a product name into a URL-safe slug, e.g. "Om Bracelet — Silver" -> "om-bracelet-silver". */
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}

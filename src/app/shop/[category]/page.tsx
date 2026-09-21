@@ -1,10 +1,42 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
+import { getRatingsMap } from "@/lib/ratings";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+// This route handles /shop/<mukhi number>, e.g. /shop/5. Named `[category]`
+// (not `[mukhi]`) purely because Next.js requires sibling dynamic segments
+// at the same path depth to share one param name — /shop/[category]/[variety]
+// lives right below it. The URL and behavior here are unchanged; only the
+// internal param name changed.
 interface ShopMukhiPageProps {
-  params: { mukhi: string };
+  params: { category: string };
+}
+
+export async function generateMetadata({ params }: ShopMukhiPageProps): Promise<Metadata> {
+  const mukhiNumber = parseInt(params.category, 10);
+  if (Number.isNaN(mukhiNumber) || mukhiNumber < 1 || mukhiNumber > 14) {
+    return { title: "Rudraksha — Ratan Mandir" };
+  }
+
+  const mukhiInfo = await prisma.mukhiInfo.findUnique({ where: { mukhiNumber } });
+  const title = `${mukhiNumber} Mukhi Rudraksha — Authentic & Lab-Certified | Ratan Mandir`;
+  const description = mukhiInfo
+    ? `Shop authentic, lab-certified ${mukhiNumber} Mukhi Rudraksha, associated with ${mukhiInfo.deity}. ${mukhiInfo.significance}`.slice(
+        0,
+        155
+      )
+    : `Shop authentic, lab-certified ${mukhiNumber} Mukhi Rudraksha beads, malas and bracelets.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `${SITE_URL}/shop/${mukhiNumber}` },
+    openGraph: { title, description, url: `${SITE_URL}/shop/${mukhiNumber}` },
+  };
 }
 
 async function getMukhiPageData(mukhiNumber: number) {
@@ -12,22 +44,27 @@ async function getMukhiPageData(mukhiNumber: number) {
     prisma.mukhiInfo.findUnique({ where: { mukhiNumber } }),
     prisma.product.findMany({
       where: { mukhiNumber, categoryType: "RUDRAKSHA" },
-      include: { images: { orderBy: { position: "asc" }, take: 1 } },
+      include: {
+        images: { orderBy: { position: "asc" }, take: 1 },
+        variants: { take: 1 },
+      },
       orderBy: { createdAt: "desc" },
     }),
   ]);
 
-  return { mukhiInfo, products };
+  const ratings = await getRatingsMap(products.map((p) => p.id));
+
+  return { mukhiInfo, products, ratings };
 }
 
 export default async function ShopMukhiPage({ params }: ShopMukhiPageProps) {
-  const mukhiNumber = parseInt(params.mukhi, 10);
+  const mukhiNumber = parseInt(params.category, 10);
 
   if (Number.isNaN(mukhiNumber) || mukhiNumber < 1 || mukhiNumber > 14) {
     notFound();
   }
 
-  const { mukhiInfo, products } = await getMukhiPageData(mukhiNumber);
+  const { mukhiInfo, products, ratings } = await getMukhiPageData(mukhiNumber);
 
   return (
     <div className="container-page py-12">
@@ -125,6 +162,16 @@ export default async function ShopMukhiPage({ params }: ShopMukhiPageProps) {
                     mrp: product.mrp?.toString() ?? null,
                     badge: product.badge,
                     images: product.images,
+                    productId: product.id,
+                    rating: ratings[product.id]?.rating ?? null,
+                    reviewCount: ratings[product.id]?.count ?? null,
+                    defaultVariant: product.variants[0]
+                      ? {
+                          id: product.variants[0].id,
+                          label: product.variants[0].label,
+                          price: Number(product.variants[0].priceOverride ?? product.basePrice),
+                        }
+                      : null,
                   }}
                 />
               ))}

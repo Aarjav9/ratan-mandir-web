@@ -471,6 +471,424 @@ async function main() {
     },
   });
 
+  console.log("Seeding Energy Stone products...");
+
+  // Real, client-supplied product photography (public/images/RatanMandir_Bracelet_Set_2/)
+  // for the flagship 6-stone gemstone bracelet.
+  await prisma.product.create({
+    data: {
+      slug: "tiger-eye-pyrite-gemstone-bracelet-6-stone",
+      name: "Tiger Eye & Pyrite Gemstone Bracelet — 6 Stone Blend",
+      description:
+        "A handcrafted natural gemstone bracelet blending six powerful stones — Aventurine, Tiger's Eye, Pyrite, Sphatik (Clear Quartz), Citrine and Jade — for balance, protection and prosperity. Each bracelet ships in premium packaging with a certificate of authenticity.",
+      basePrice: 1299.0,
+      mrp: 1699.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "India",
+      isCertified: true,
+      isBestseller: true,
+      badge: "Bestseller",
+      images: {
+        create: [
+          { url: "/images/RatanMandir_Bracelet_Set_2/01_Hero_Product.jpg", altText: "Tiger Eye & Pyrite 6 stone gemstone bracelet", position: 0 },
+          { url: "/images/RatanMandir_Bracelet_Set_2/06_Wrist_Lifestyle.jpg", altText: "6 stone gemstone bracelet worn on wrist", position: 1 },
+          { url: "/images/RatanMandir_Bracelet_Set_2/02_Regular_Size_Dimension.jpg", altText: "Regular size dimensions — 8mm beads", position: 2 },
+          { url: "/images/RatanMandir_Bracelet_Set_2/03_Small_Size_Dimension.jpg", altText: "Small size dimensions — 6mm beads", position: 3 },
+          { url: "/images/RatanMandir_Bracelet_Set_2/04_Power_of_Natural_Stones.jpg", altText: "The six stones and their traditional meanings", position: 4 },
+          { url: "/images/RatanMandir_Bracelet_Set_2/05_Certificate_of_Authenticity.jpg", altText: "Certificate of authenticity and packaging", position: 5 },
+        ],
+      },
+      variants: {
+        create: [
+          { label: "Regular (8mm beads, fits most wrists)", priceOverride: 1299.0, stock: 40 },
+          { label: "Small (6mm beads, for slim wrists)", priceOverride: 1199.0, stock: 25 },
+        ],
+      },
+      reviews: {
+        create: [
+          { customerName: "Ishita M.", rating: 5, comment: "Gorgeous colour combination and the certificate box makes it feel premium.", isVerified: false },
+          { customerName: "Rahul S.", rating: 5, comment: "Bought the small size for my wife, fits perfectly and looks elegant.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  // Real, client-supplied product photography (public/images/RatanMandir_Bracelet_Images/)
+  // for the 4-stone gemstone bracelet.
+  await prisma.product.create({
+    data: {
+      slug: "tiger-eye-pyrite-gemstone-bracelet-4-stone",
+      name: "Tiger Eye & Pyrite Gemstone Bracelet — 4 Stone Blend",
+      description:
+        "A natural gemstone bracelet blending four grounding stones — Aventurine, Tiger's Eye, Pyrite and Citrine — for confidence, protection and everyday positive energy. Ships in an elegant gift box with a certificate of authenticity.",
+      basePrice: 999.0,
+      mrp: 1299.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "India",
+      isCertified: true,
+      isBestseller: true,
+      badge: "Bestseller",
+      images: {
+        create: [
+          { url: "/images/RatanMandir_Bracelet_Images/01_hero_product.jpg", altText: "Tiger Eye & Pyrite 4 stone gemstone bracelet", position: 0 },
+          { url: "/images/RatanMandir_Bracelet_Images/04_wrist_lifestyle.jpg", altText: "4 stone gemstone bracelet worn on wrist", position: 1 },
+          { url: "/images/RatanMandir_Bracelet_Images/02_regular_size_dimension.jpg", altText: "Regular size dimensions — 8mm beads", position: 2 },
+          { url: "/images/RatanMandir_Bracelet_Images/03_small_size_dimension.jpg", altText: "Small size dimensions", position: 3 },
+          { url: "/images/RatanMandir_Bracelet_Images/05_power_of_natural_stones.jpg", altText: "The four stones and their traditional meanings", position: 4 },
+          { url: "/images/RatanMandir_Bracelet_Images/06_premium_packaging.jpg", altText: "Premium packaging and certificate", position: 5 },
+        ],
+      },
+      variants: {
+        create: [
+          { label: "Regular (8mm beads, fits most wrists)", priceOverride: 999.0, stock: 40 },
+          { label: "Small (for slim wrists)", priceOverride: 899.0, stock: 25 },
+        ],
+      },
+      reviews: {
+        create: [
+          { customerName: "Varun K.", rating: 5, comment: "Great everyday bracelet, sturdy elastic and nice weight.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "pyrite-bracelet-abundance",
+      name: "Pyrite Bracelet — Abundance",
+      description:
+        "A polished Pyrite bead bracelet, often called 'Fool's Gold', worn as a grounding stone associated with confidence, willpower and abundance.",
+      basePrice: 799.0,
+      mrp: 999.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "Peru",
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/energy-stone-pyrite-bracelet.jpg", altText: "Pyrite bracelet", position: 0 }],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 799.0, stock: 30 }] },
+      reviews: {
+        create: [
+          { customerName: "Tanvi R.", rating: 5, comment: "Beautiful shine, exactly like the photos.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "rose-quartz-bracelet-self-love",
+      name: "Rose Quartz Bracelet — Self Love",
+      description:
+        "A gentle pink Rose Quartz bead bracelet, known as the stone of unconditional love, worn for emotional calm and self-compassion.",
+      basePrice: 749.0,
+      mrp: 949.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "Brazil",
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/energy-stone-rose-quartz-bracelet.jpg", altText: "Rose Quartz bracelet", position: 0 }],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 749.0, stock: 30 }] },
+      reviews: {
+        create: [
+          { customerName: "Pooja S.", rating: 5, comment: "Soft pink colour, very calming to wear.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "tiger-eye-bracelet-focus-protection",
+      name: "Tiger Eye Bracelet — Focus & Protection",
+      description:
+        "A golden-brown Tiger Eye bead bracelet, traditionally worn for mental clarity, focus and protection from negative energy.",
+      basePrice: 899.0,
+      mrp: 1199.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "South Africa",
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/energy-stone-tiger-eye-bracelet.jpg", altText: "Tiger Eye bracelet", position: 0 }],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 899.0, stock: 25 }] },
+      reviews: {
+        create: [
+          { customerName: "Karan V.", rating: 4, comment: "Good weight and colour, sturdy elastic.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  console.log("Seeding Spiritual Jewellery products...");
+
+  await prisma.product.create({
+    data: {
+      slug: "om-spiritual-bracelet-silver",
+      name: "Om Spiritual Bracelet — Silver",
+      description:
+        "A sterling silver bracelet featuring the sacred Om symbol, a versatile everyday piece for daily spiritual grounding.",
+      basePrice: 1299.0,
+      mrp: 1599.0,
+      categoryType: CategoryType.SPIRITUAL_JEWELLERY,
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/spiritual-jewellery-om-bracelet.jpg", altText: "Om spiritual bracelet", position: 0 }],
+      },
+      variants: { create: [{ label: "Adjustable", priceOverride: 1299.0, stock: 20 }] },
+      reviews: {
+        create: [
+          { customerName: "Shreya D.", rating: 5, comment: "Elegant and simple, gets compliments often.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "ganesha-spiritual-necklace-brass",
+      name: "Ganesha Spiritual Necklace — Brass",
+      description:
+        "A handcrafted brass pendant necklace featuring Lord Ganesha, worn as a symbol of new beginnings and removal of obstacles.",
+      basePrice: 1899.0,
+      mrp: 2399.0,
+      categoryType: CategoryType.SPIRITUAL_JEWELLERY,
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/spiritual-jewellery-ganesha-necklace.jpg", altText: "Ganesha spiritual necklace", position: 0 }],
+      },
+      variants: { create: [{ label: "18-inch Chain", priceOverride: 1899.0, stock: 15 }] },
+      reviews: {
+        create: [
+          { customerName: "Ajay N.", rating: 5, comment: "Well detailed pendant, feels substantial.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  console.log("Seeding Karungali products...");
+
+  await prisma.product.create({
+    data: {
+      slug: "karungali-mala-108-beads",
+      name: "Karungali Mala — 108 Beads",
+      description:
+        "A traditional 108-bead mala of Karungali (black ebony wood), revered in Tamil tradition for its protective, negativity-repelling properties.",
+      basePrice: 1499.0,
+      mrp: 1899.0,
+      categoryType: CategoryType.KARUNGALI,
+      origin: "Tamil Nadu",
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/karungali-mala.jpg", altText: "Karungali 108-bead mala", position: 0 }],
+      },
+      variants: { create: [{ label: "8mm Beads", priceOverride: 1499.0, stock: 20 }] },
+      reviews: {
+        create: [
+          { customerName: "Lakshmi P.", rating: 5, comment: "Authentic feel, my grandmother recognised it immediately.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "karungali-bracelet-protective",
+      name: "Karungali Bracelet — Protective Black Ebony",
+      description:
+        "A compact Karungali (black ebony wood) bracelet for everyday wear, traditionally believed to guard against negative energy and the evil eye.",
+      basePrice: 899.0,
+      mrp: 1199.0,
+      categoryType: CategoryType.KARUNGALI,
+      origin: "Tamil Nadu",
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/karungali-bracelet.jpg", altText: "Karungali bracelet", position: 0 }],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 899.0, stock: 25 }] },
+      reviews: {
+        create: [
+          { customerName: "Ravi K.", rating: 4, comment: "Lightweight and comfortable for daily wear.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  console.log("Seeding Vastu products...");
+
+  await prisma.product.create({
+    data: {
+      slug: "vastu-home-energy-pyramid-set",
+      name: "Vastu Home Energy Pyramid Set",
+      description:
+        "A set of copper Vastu pyramids designed to be placed at home to balance the five elements and support a harmonious living space.",
+      basePrice: 1199.0,
+      mrp: 1499.0,
+      categoryType: CategoryType.VASTU,
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/vastu-home-energy-pyramid-set.jpg", altText: "Vastu home energy pyramid set", position: 0 }],
+      },
+      variants: { create: [{ label: "Set of 9", priceOverride: 1199.0, stock: 15 }] },
+      reviews: {
+        create: [
+          { customerName: "Sunil G.", rating: 5, comment: "Well made, easy to place around the house.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "vastu-office-energy-desk-set",
+      name: "Vastu Office Energy Desk Set",
+      description:
+        "A compact Vastu desk set intended to support focus and positive energy at the workplace, placed on or near the work desk.",
+      basePrice: 999.0,
+      mrp: 1299.0,
+      categoryType: CategoryType.VASTU,
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/vastu-office-energy-desk-set.jpg", altText: "Vastu office energy desk set", position: 0 }],
+      },
+      variants: { create: [{ label: "Set of 5", priceOverride: 999.0, stock: 15 }] },
+      reviews: {
+        create: [
+          { customerName: "Meenal J.", rating: 4, comment: "Nice desk addition, subtle and not bulky.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  console.log("Seeding Zodiac products...");
+
+  await prisma.product.create({
+    data: {
+      slug: "aries-zodiac-rudraksha-bracelet",
+      name: "Aries Zodiac Rudraksha Bracelet",
+      description:
+        "A Rudraksha bracelet paired with red thread accents, traditionally recommended for Aries (Mesh Rashi) to support courage and drive.",
+      basePrice: 999.0,
+      mrp: 1299.0,
+      categoryType: CategoryType.ZODIAC,
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/zodiac-aries-bracelet.jpg", altText: "Aries zodiac Rudraksha bracelet", position: 0 }],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 999.0, stock: 18 }] },
+      reviews: {
+        create: [
+          { customerName: "Aditya M.", rating: 5, comment: "Good match for my sign, well made bracelet.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "leo-zodiac-gemstone-pendant",
+      name: "Leo Zodiac Gemstone Pendant",
+      description:
+        "A Sun-aligned gemstone pendant traditionally recommended for Leo (Simha Rashi), worn to support leadership and vitality.",
+      basePrice: 2499.0,
+      mrp: 2999.0,
+      categoryType: CategoryType.ZODIAC,
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/zodiac-leo-pendant.jpg", altText: "Leo zodiac gemstone pendant", position: 0 }],
+      },
+      variants: { create: [{ label: "Silver Cap Pendant", priceOverride: 2499.0, stock: 10 }] },
+      reviews: {
+        create: [
+          { customerName: "Rhea C.", rating: 5, comment: "Beautiful pendant, arrived with a certificate.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "scorpio-zodiac-rudraksha-bracelet",
+      name: "Scorpio Zodiac Rudraksha Bracelet",
+      description:
+        "A Rudraksha bracelet traditionally recommended for Scorpio (Vrishchik Rashi), worn to support intensity balanced with calm.",
+      basePrice: 999.0,
+      mrp: 1299.0,
+      categoryType: CategoryType.ZODIAC,
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/zodiac-scorpio-bracelet.jpg", altText: "Scorpio zodiac Rudraksha bracelet", position: 0 }],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 999.0, stock: 18 }] },
+      reviews: {
+        create: [
+          { customerName: "Nikhil T.", rating: 4, comment: "Solid bracelet, comfortable fit.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  console.log("Seeding Gift Hamper products...");
+
+  await prisma.product.create({
+    data: {
+      slug: "diwali-celebration-hamper-rudraksha-diya",
+      name: "Diwali Celebration Hamper — Rudraksha & Diya Set",
+      description:
+        "A curated Diwali gift hamper featuring a Rudraksha bracelet, a brass diya and festive packaging — ready to gift for the festival of lights.",
+      basePrice: 2499.0,
+      mrp: 2999.0,
+      categoryType: CategoryType.GIFT_HAMPER,
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/gift-hamper-diwali.jpg", altText: "Diwali celebration hamper", position: 0 }],
+      },
+      variants: { create: [{ label: "Standard Hamper", priceOverride: 2499.0, stock: 12 }] },
+      reviews: {
+        create: [
+          { customerName: "Nisha A.", rating: 5, comment: "Lovely presentation, perfect for gifting family.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "rakhi-celebration-hamper-bracelet-sweets",
+      name: "Rakhi Celebration Hamper — Bracelet & Sweets Box",
+      description:
+        "A festive Rakhi gift hamper with a spiritual bracelet and a box of sweets, thoughtfully packaged for Raksha Bandhan.",
+      basePrice: 1799.0,
+      mrp: 2199.0,
+      categoryType: CategoryType.GIFT_HAMPER,
+      isCertified: true,
+      isBestseller: false,
+      images: {
+        create: [{ url: "/images/placeholder/gift-hamper-rakhi.jpg", altText: "Rakhi celebration hamper", position: 0 }],
+      },
+      variants: { create: [{ label: "Standard Hamper", priceOverride: 1799.0, stock: 12 }] },
+      reviews: {
+        create: [
+          { customerName: "Komal S.", rating: 5, comment: "Sent this to my brother, he loved it.", isVerified: false },
+        ],
+      },
+    },
+  });
+
   console.log("Seed complete.");
 }
 
