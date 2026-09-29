@@ -44,7 +44,29 @@ export default async function SearchPage({
       <h1 className="font-marcellus text-3xl text-maroonDeep">
         {query ? `Search results for "${query}"` : "Search"}
       </h1>
-      <p className="mt-2 font-mulish text-sm text-inkSoft">
+
+      {/* The header's own search bar is desktop-only (md:flex) and the mobile
+          bottom-nav search icon links straight here — without an input on
+          this page itself, a mobile visitor landing here has no way to
+          actually type a query. */}
+      <form action="/search" method="GET" className="mt-5 flex max-w-lg gap-2">
+        <input
+          type="search"
+          name="q"
+          defaultValue={query}
+          autoFocus
+          placeholder="Search for Rudraksha, gemstones, bracelets..."
+          className="min-w-0 flex-1 rounded-card border border-line bg-card px-4 py-3 font-mulish text-sm text-ink outline-none focus:border-maroon"
+        />
+        <button
+          type="submit"
+          className="shrink-0 rounded-card bg-maroon px-5 py-3 font-mulish text-sm font-bold text-ivory shadow-soft transition-colors hover:bg-maroonDeep"
+        >
+          Search
+        </button>
+      </form>
+
+      <p className="mt-4 font-mulish text-sm text-inkSoft">
         {query
           ? `${products.length} result${products.length === 1 ? "" : "s"} found`
           : "Enter a search term to find products."}

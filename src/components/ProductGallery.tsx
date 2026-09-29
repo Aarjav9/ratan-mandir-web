@@ -38,6 +38,16 @@ export default function ProductGallery({ images }: { images: GalleryImage[] }) {
     setActiveIndex(index);
   };
 
+  const goToPrev = () => {
+    setAutoplayPaused(true);
+    setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const goToNext = () => {
+    setAutoplayPaused(true);
+    setActiveIndex((prev) => (prev + 1) % images.length);
+  };
+
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -47,7 +57,7 @@ export default function ProductGallery({ images }: { images: GalleryImage[] }) {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="mx-auto flex w-full max-w-md flex-col gap-3 md:max-w-none">
       <div
         ref={containerRef}
         className="relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-card border border-line bg-ivoryDeep"
@@ -69,6 +79,35 @@ export default function ProductGallery({ images }: { images: GalleryImage[] }) {
           <div className="flex h-full w-full items-center justify-center font-mulish text-sm text-inkSoft">
             Product photography coming soon
           </div>
+        )}
+
+        {images.length > 1 && (
+          <>
+            {/* Left/right halves of the image act as prev/next tap zones,
+                with a small arrow always visible so the interaction is
+                discoverable on touch devices (hover-to-reveal doesn't work
+                there). z-10 keeps these above the zoomable image itself. */}
+            <button
+              type="button"
+              onClick={goToPrev}
+              aria-label="Previous image"
+              className="group absolute inset-y-0 left-0 z-10 flex w-1/2 items-center justify-start pl-3"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ivory/80 text-maroon shadow-soft transition-opacity group-hover:bg-ivory">
+                ‹
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={goToNext}
+              aria-label="Next image"
+              className="group absolute inset-y-0 right-0 z-10 flex w-1/2 items-center justify-end pr-3"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ivory/80 text-maroon shadow-soft transition-opacity group-hover:bg-ivory">
+                ›
+              </span>
+            </button>
+          </>
         )}
       </div>
       {images.length > 1 && (

@@ -172,7 +172,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-ivory/15">
-        <div className="container-page flex flex-col items-center gap-3 py-6">
+        <div className="container-page flex flex-col items-center gap-4 py-8">
           <div className="flex flex-wrap items-center justify-center gap-2">
             {PAYMENT_METHODS.map((method) => (
               <span
@@ -183,9 +183,9 @@ export default function Footer() {
               </span>
             ))}
           </div>
-          <div className="flex flex-col items-center justify-between gap-3 font-mulish text-xs text-ivory/60 md:w-full md:flex-row">
+          <div className="flex flex-col items-center gap-2 text-center font-mulish text-xs text-ivory/60 md:w-full md:flex-row md:justify-between md:text-left">
             <p>&copy; {new Date().getFullYear()} Ratan Mandir. All rights reserved.</p>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
               {/* Legal pages required before live payments go active — see README checklist. */}
               <span className="cursor-default">Privacy Policy</span>
               <span className="cursor-default">Terms of Service</span>
