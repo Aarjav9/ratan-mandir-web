@@ -10,7 +10,9 @@ interface QuickActionsProduct {
   name: string;
   image: string;
   price: number;
+  mrp?: number | null;
   defaultVariant?: { id: string; label: string; price: number } | null;
+  variantCount?: number;
 }
 
 export default function ProductCardQuickActions({ product }: { product: QuickActionsProduct }) {
@@ -41,6 +43,7 @@ export default function ProductCardQuickActions({ product }: { product: QuickAct
       name: product.name,
       variantLabel: product.defaultVariant.label,
       price: product.defaultVariant.price,
+      mrp: product.mrp,
       image: product.image,
       slug: product.slug,
     });
@@ -67,14 +70,24 @@ export default function ProductCardQuickActions({ product }: { product: QuickAct
         </svg>
       </button>
 
-      {product.defaultVariant && (
-        <button
-          type="button"
-          onClick={handleQuickAdd}
-          className="absolute inset-x-3 bottom-3 z-10 rounded-card bg-ink/90 py-2 font-mulish text-xs font-bold text-ivory shadow-soft transition-all duration-200 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100"
-        >
-          {justAdded ? "Added ✓" : "Quick Add"}
-        </button>
+      {(product.variantCount ?? 0) > 1 ? (
+        // More than one variant — don't guess which one the shopper wants.
+        // No onClick: the ancestor <Link> (the whole card) already
+        // navigates to the PDP on click, so this just needs to look like
+        // a button, not behave like a second nested link.
+        <div className="absolute inset-x-3 bottom-3 z-10 rounded-card border border-maroon bg-card/95 py-2 text-center font-mulish text-xs font-bold text-maroon shadow-soft transition-all duration-200 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
+          Choose Options
+        </div>
+      ) : (
+        product.defaultVariant && (
+          <button
+            type="button"
+            onClick={handleQuickAdd}
+            className="absolute inset-x-3 bottom-3 z-10 rounded-card bg-ink/90 py-2 font-mulish text-xs font-bold text-ivory shadow-soft transition-all duration-200 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100"
+          >
+            {justAdded ? "Added ✓" : "Quick Add"}
+          </button>
+        )
       )}
     </>
   );

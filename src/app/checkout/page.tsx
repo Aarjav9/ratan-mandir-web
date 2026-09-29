@@ -4,6 +4,7 @@ import { useState, type ChangeEvent } from "react";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useCoupon } from "@/context/CouponContext";
 import { formatInr } from "@/lib/format";
 
 interface ShippingForm {
@@ -39,6 +40,9 @@ declare global {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, clearCart } = useCart();
+  const { coupon, removeCoupon } = useCoupon();
+  const discountAmount = coupon ? Math.round(subtotal * (coupon.discountPercent / 100)) : 0;
+  const total = subtotal - discountAmount;
   const [form, setForm] = useState<ShippingForm>(EMPTY_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +88,7 @@ export default function CheckoutPage() {
             price: item.price,
           })),
           shippingAddress: form,
+          couponCode: coupon?.code ?? null,
         }),
       });
 
@@ -106,6 +111,7 @@ export default function CheckoutPage() {
         // be demoed end-to-end. In LIVE mode, the branch below opens the real
         // Razorpay checkout modal instead.
         clearCart();
+        removeCoupon();
         setSuccessMessage(
           `Order placed (demo mode). Reference: ${data.dbOrderId}. In production, this step opens the real Razorpay payment modal.`
         );
@@ -129,6 +135,7 @@ export default function CheckoutPage() {
         theme: { color: "#7A1620" },
         handler: () => {
           clearCart();
+          removeCoupon();
           setSuccessMessage(
             `Payment successful. Order reference: ${data.dbOrderId}. Your order confirmation will follow shortly.`
           );
@@ -213,9 +220,19 @@ export default function CheckoutPage() {
               </div>
             ))}
           </div>
-          <div className="mt-4 flex justify-between border-t border-line pt-4 font-mulish text-sm">
-            <span className="font-semibold text-ink">Total</span>
-            <span className="font-extrabold text-maroon">{formatInr(subtotal)}</span>
+          <div className="mt-4 border-t border-line pt-4">
+            {coupon && (
+              <div className="mb-2 flex justify-between font-mulish text-sm text-inkSoft">
+                <span>
+                  Discount (&quot;{coupon.code}&quot; · {coupon.discountPercent}%)
+                </span>
+                <span className="text-maroon">−{formatInr(discountAmount)}</span>
+              </div>
+            )}
+            <div className="flex justify-between font-mulish text-sm">
+              <span className="font-semibold text-ink">Total</span>
+              <span className="font-extrabold text-maroon">{formatInr(total)}</span>
+            </div>
           </div>
 
           {error && <p className="mt-4 font-mulish text-xs text-maroon">{error}</p>}

@@ -14,9 +14,11 @@ export interface CategoryTaxonomyItem {
 
 // Structured to mirror the category breadth of established spiritual
 // e-commerce sites (Rudraksha / Energy Stones / Spiritual Jewellery /
-// Karungali / Vastu / Zodiac / Gift Hampers), while every href, product,
-// image and description below is our own — nothing is copied. All 7
-// categories now have real (sample/placeholder) inventory behind them.
+// Karungali / Vastu / Zodiac), while every href, product, image and
+// description below is our own — nothing is copied. All categories here
+// have real (sample/placeholder) inventory behind them. Gift Hampers was
+// removed from navigation; its 2 seeded products remain reachable via
+// search/sitemap but have no nav entry point.
 export const CATEGORY_TAXONOMY: CategoryTaxonomyItem[] = [
   {
     slug: "rudraksha",
@@ -86,17 +88,6 @@ export const CATEGORY_TAXONOMY: CategoryTaxonomyItem[] = [
       { label: "Aries – Cancer", href: "/shop/zodiac/aries-cancer" },
       { label: "Leo – Libra", href: "/shop/zodiac/leo-libra" },
       { label: "Scorpio – Pisces", href: "/shop/zodiac/scorpio-pisces" },
-    ],
-  },
-  {
-    slug: "gifting",
-    label: "Gift Hampers",
-    shortCopy: "Curated spiritual gifts for every celebration.",
-    live: true,
-    href: "/shop/gifting/diwali-celebration-hampers",
-    subItems: [
-      { label: "Diwali Celebration Hampers", href: "/shop/gifting/diwali-celebration-hampers" },
-      { label: "Rakhi Celebration Hampers", href: "/shop/gifting/rakhi-celebration-hampers" },
     ],
   },
 ];

@@ -24,23 +24,14 @@ export default function ComingSoonPage({
         </h1>
         <p className="max-w-md font-mulish text-sm leading-relaxed text-inkSoft">
           We&apos;re carefully sourcing and certifying this collection. In the meantime,
-          explore our authentic Rudraksha and Navratna gemstones — available and lab-certified
-          today.
+          explore what&apos;s already available and lab-certified today.
         </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link
-            href="/shop/5"
-            className="rounded-card bg-maroon px-7 py-3 font-mulish text-sm font-bold text-ivory shadow-soft transition-colors hover:bg-maroonDeep"
-          >
-            Shop Rudraksha
-          </Link>
-          <Link
-            href="/#navratna"
-            className="rounded-card border border-gold px-7 py-3 font-mulish text-sm font-bold text-maroon transition-colors hover:bg-card"
-          >
-            Explore Navratna Gemstones
-          </Link>
-        </div>
+        <Link
+          href="/"
+          className="rounded-card bg-maroon px-7 py-3 font-mulish text-sm font-bold text-ivory shadow-soft transition-colors hover:bg-maroonDeep"
+        >
+          Back to Home
+        </Link>
       </div>
     </div>
   );

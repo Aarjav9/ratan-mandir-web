@@ -36,6 +36,7 @@ export default async function RudrakshaVarietyPage({ params }: VarietyPageProps)
     include: {
       images: { orderBy: { position: "asc" }, take: 1 },
       variants: { take: 1 },
+      _count: { select: { variants: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -92,6 +93,7 @@ export default async function RudrakshaVarietyPage({ params }: VarietyPageProps)
                 productId: product.id,
                 rating: ratings[product.id]?.rating ?? null,
                 reviewCount: ratings[product.id]?.count ?? null,
+                variantCount: product._count.variants,
                 defaultVariant: product.variants[0]
                   ? {
                       id: product.variants[0].id,

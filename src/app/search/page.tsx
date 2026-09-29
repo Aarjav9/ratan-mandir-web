@@ -31,6 +31,7 @@ export default async function SearchPage({
         include: {
           images: { orderBy: { position: "asc" }, take: 1 },
           variants: { take: 1 },
+          _count: { select: { variants: true } },
         },
         take: 24,
       })
@@ -56,7 +57,7 @@ export default async function SearchPage({
             Rudraksha
           </a>{" "}
           and{" "}
-          <a href="/#navratna" className="font-bold text-maroon underline underline-offset-4">
+          <a href="/shop/gemstones" className="font-bold text-maroon underline underline-offset-4">
             Navratna Gemstones
           </a>
           .
@@ -78,6 +79,7 @@ export default async function SearchPage({
                 productId: product.id,
                 rating: ratings[product.id]?.rating ?? null,
                 reviewCount: ratings[product.id]?.count ?? null,
+                variantCount: product._count.variants,
                 defaultVariant: product.variants[0]
                   ? {
                       id: product.variants[0].id,

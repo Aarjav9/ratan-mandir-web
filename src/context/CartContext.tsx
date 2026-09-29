@@ -16,6 +16,10 @@ export interface CartItem {
   name: string;
   variantLabel: string | null;
   price: number;
+  // Original (MRP) price, so the cart can show a struck-through comparison
+  // next to the selling price — same convention as ProductCard. Optional
+  // so carts saved before this field existed still load fine.
+  mrp?: number | null;
   qty: number;
   image: string;
   slug: string;

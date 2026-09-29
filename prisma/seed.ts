@@ -624,6 +624,167 @@ async function main() {
     },
   });
 
+  // Real, client-supplied product photography for 5 more Energy Stone pieces.
+  await prisma.product.create({
+    data: {
+      slug: "natural-pyrite-bracelet",
+      name: "Natural Pyrite Bracelet",
+      description:
+        "A polished Natural Pyrite bead bracelet, worn for wealth, confidence, protection and success. Ships with a certificate of authenticity.",
+      basePrice: 799.0,
+      mrp: 999.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "Peru",
+      isCertified: true,
+      isBestseller: true,
+      badge: "New",
+      images: {
+        create: [
+          { url: "/images/RatanMandir_Pyrite_6_Images/01_Natural_Pyrite_Bracelet.png", altText: "Natural Pyrite bracelet", position: 0 },
+          { url: "/images/RatanMandir_Pyrite_6_Images/06_Carry_Positive_Energy_Everyday.png", altText: "Pyrite bracelet worn on wrist", position: 1 },
+          { url: "/images/RatanMandir_Pyrite_6_Images/02_Size_and_Dimension.png", altText: "Pyrite bracelet size and dimensions", position: 2 },
+          { url: "/images/RatanMandir_Pyrite_6_Images/03_About_Pyrite.png", altText: "About Pyrite", position: 3 },
+          { url: "/images/RatanMandir_Pyrite_6_Images/04_Benefits_of_Pyrite.png", altText: "Benefits of Pyrite", position: 4 },
+          { url: "/images/RatanMandir_Pyrite_6_Images/05_Certificate_of_Authenticity.png", altText: "Certificate of authenticity", position: 5 },
+        ],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 799.0, stock: 30 }] },
+      reviews: {
+        create: [
+          { customerName: "Manish T.", rating: 5, comment: "Great shine and weight, feels premium.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "natural-pyrite-anklet",
+      name: "Natural Pyrite Anklet",
+      description:
+        "A faceted Natural Pyrite bead anklet with an adjustable chain, worn for wealth, confidence, protection and success.",
+      basePrice: 699.0,
+      mrp: 899.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "Peru",
+      isCertified: true,
+      isBestseller: true,
+      badge: "New",
+      images: {
+        create: [
+          { url: "/images/RatanMandir_Pyrite_Anklet_HD_6_Images/Natural_Pyrite_Anklet.png", altText: "Natural Pyrite anklet", position: 0 },
+          { url: "/images/RatanMandir_Pyrite_Anklet_HD_6_Images/Carry_Positive_Energy_Everyday.png", altText: "Pyrite anklet worn", position: 1 },
+          { url: "/images/RatanMandir_Pyrite_Anklet_HD_6_Images/Size_and_Dimension.png", altText: "Pyrite anklet size and dimensions", position: 2 },
+          { url: "/images/RatanMandir_Pyrite_Anklet_HD_6_Images/About_Pyrite.png", altText: "About Pyrite", position: 3 },
+          { url: "/images/RatanMandir_Pyrite_Anklet_HD_6_Images/Benefits_of_Pyrite_Anklet.png", altText: "Benefits of Pyrite anklet", position: 4 },
+          { url: "/images/RatanMandir_Pyrite_Anklet_HD_6_Images/Certificate_of_Authenticity.png", altText: "Certificate of authenticity", position: 5 },
+        ],
+      },
+      variants: { create: [{ label: "Adjustable (one size)", priceOverride: 699.0, stock: 25 }] },
+      reviews: {
+        create: [
+          { customerName: "Sneha R.", rating: 5, comment: "Adjustable chain fits perfectly, lovely sparkle.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "pyrite-seven-chakra-band",
+      name: "Pyrite x Seven Chakra Band",
+      description:
+        "A Pyrite bracelet accented with the seven chakra stones, worn to balance energy, attract positivity and build inner strength.",
+      basePrice: 899.0,
+      mrp: 1199.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "Peru",
+      isCertified: true,
+      isBestseller: true,
+      badge: "New",
+      images: {
+        create: [
+          { url: "/images/RatanMandir_Pyrite_Seven_Chakra_HD_6_Images/Pyrite_Seven_Chakra_Band.png", altText: "Pyrite x Seven Chakra band", position: 0 },
+          { url: "/images/RatanMandir_Pyrite_Seven_Chakra_HD_6_Images/Wear_Positive_Energy_Everyday.png", altText: "Seven Chakra band worn on wrist", position: 1 },
+          { url: "/images/RatanMandir_Pyrite_Seven_Chakra_HD_6_Images/Size_and_Dimension.png", altText: "Size and dimensions", position: 2 },
+          { url: "/images/RatanMandir_Pyrite_Seven_Chakra_HD_6_Images/About_Pyrite_Seven_Chakra_Band.png", altText: "About this band", position: 3 },
+          { url: "/images/RatanMandir_Pyrite_Seven_Chakra_HD_6_Images/Seven_Chakra_Stones.png", altText: "The seven chakra stones", position: 4 },
+          { url: "/images/RatanMandir_Pyrite_Seven_Chakra_HD_6_Images/Certificate_of_Authenticity.png", altText: "Certificate of authenticity", position: 5 },
+        ],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 899.0, stock: 25 }] },
+      reviews: {
+        create: [
+          { customerName: "Divya K.", rating: 5, comment: "Beautiful colours, exactly as shown.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "tiger-eye-obsidian-hematite-bracelet",
+      name: "Tiger Eye, Black Obsidian & Hematite Bracelet",
+      description:
+        "A grounding blend of Tiger Eye, Black Obsidian and Hematite beads, worn for protection, strength, balance and confidence.",
+      basePrice: 899.0,
+      mrp: 1199.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "South Africa",
+      isCertified: true,
+      isBestseller: true,
+      badge: "New",
+      images: {
+        create: [
+          { url: "/images/RatanMandir_TigerEye_Obsidian_Hematite_HD_6_Images/Tiger_Eye_Black_Obsidian_Hematite_Bracelet.png", altText: "Tiger Eye, Black Obsidian and Hematite bracelet", position: 0 },
+          { url: "/images/RatanMandir_TigerEye_Obsidian_Hematite_HD_6_Images/Wear_Positive_Energy_Everyday.png", altText: "Bracelet worn on wrist", position: 1 },
+          { url: "/images/RatanMandir_TigerEye_Obsidian_Hematite_HD_6_Images/Size_and_Dimension.png", altText: "Size and dimensions", position: 2 },
+          { url: "/images/RatanMandir_TigerEye_Obsidian_Hematite_HD_6_Images/About_This_Bracelet.png", altText: "About this bracelet", position: 3 },
+          { url: "/images/RatanMandir_TigerEye_Obsidian_Hematite_HD_6_Images/Gemstone_Benefits.png", altText: "Gemstone benefits", position: 4 },
+          { url: "/images/RatanMandir_TigerEye_Obsidian_Hematite_HD_6_Images/Certificate_of_Authenticity.png", altText: "Certificate of authenticity", position: 5 },
+        ],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 899.0, stock: 25 }] },
+      reviews: {
+        create: [
+          { customerName: "Rohan P.", rating: 5, comment: "Love the dark, masculine look of this one.", isVerified: false },
+        ],
+      },
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      slug: "tiger-eye-seven-chakra-bracelet",
+      name: "Tiger Eye x Seven Chakra Bracelet",
+      description:
+        "A Tiger Eye bracelet accented with the seven chakra stones, worn to balance energy, attract positivity and build inner strength.",
+      basePrice: 899.0,
+      mrp: 1199.0,
+      categoryType: CategoryType.ENERGY_STONE,
+      origin: "South Africa",
+      isCertified: true,
+      isBestseller: true,
+      badge: "New",
+      images: {
+        create: [
+          { url: "/images/RatanMandir_TigerEye_Seven_Chakra_HD_6_Images/Tiger_Eye_Seven_Chakra_Bracelet.png", altText: "Tiger Eye x Seven Chakra bracelet", position: 0 },
+          { url: "/images/RatanMandir_TigerEye_Seven_Chakra_HD_6_Images/Wear_Positive_Energy_Everyday.png", altText: "Bracelet worn on wrist", position: 1 },
+          { url: "/images/RatanMandir_TigerEye_Seven_Chakra_HD_6_Images/Size_and_Dimension.png", altText: "Size and dimensions", position: 2 },
+          { url: "/images/RatanMandir_TigerEye_Seven_Chakra_HD_6_Images/About_Tiger_Eye_Seven_Chakra_Bracelet.png", altText: "About this bracelet", position: 3 },
+          { url: "/images/RatanMandir_TigerEye_Seven_Chakra_HD_6_Images/Seven_Chakra_Stones.png", altText: "The seven chakra stones", position: 4 },
+          { url: "/images/RatanMandir_TigerEye_Seven_Chakra_HD_6_Images/Certificate_of_Authenticity.png", altText: "Certificate of authenticity", position: 5 },
+        ],
+      },
+      variants: { create: [{ label: "Standard (fits most wrists)", priceOverride: 899.0, stock: 25 }] },
+      reviews: {
+        create: [
+          { customerName: "Alok M.", rating: 4, comment: "Solid quality, colours are vibrant.", isVerified: false },
+        ],
+      },
+    },
+  });
+
   console.log("Seeding Spiritual Jewellery products...");
 
   await prisma.product.create({
@@ -887,6 +1048,26 @@ async function main() {
         ],
       },
     },
+  });
+
+  console.log("Seeding sample coupons...");
+  await prisma.coupon.deleteMany({});
+  await prisma.coupon.createMany({
+    data: [
+      {
+        code: "WELCOME10",
+        description: "10% off your first order",
+        discountPercent: 10,
+        isActive: true,
+      },
+      {
+        code: "FESTIVE20",
+        description: "20% off orders above ₹999",
+        discountPercent: 20,
+        minOrderValue: 999.0,
+        isActive: true,
+      },
+    ],
   });
 
   console.log("Seed complete.");

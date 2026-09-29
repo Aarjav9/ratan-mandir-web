@@ -27,7 +27,7 @@ const config: Config = {
         mulish: ["var(--font-mulish)", "system-ui", "sans-serif"],
       },
       borderRadius: {
-        card: "8px",
+        card: "12px",
       },
       boxShadow: {
         soft: "0 4px 20px rgba(92, 15, 23, 0.08)",

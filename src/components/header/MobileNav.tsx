@@ -113,14 +113,11 @@ export default function MobileNav({
         </div>
 
         <div className="flex flex-col gap-3 border-t border-line px-5 py-4">
-          <Link href="/#navratna" onClick={onClose} className="font-mulish text-sm text-ink">
+          <Link href="/shop/gemstones" onClick={onClose} className="font-mulish text-sm text-ink">
             Gemstones
           </Link>
           <Link href="/#brand-story" onClick={onClose} className="font-mulish text-sm text-ink">
             Our Story
-          </Link>
-          <Link href="/#astro-consultation" onClick={onClose} className="font-mulish text-sm text-ink">
-            Astro Consultation
           </Link>
         </div>
 

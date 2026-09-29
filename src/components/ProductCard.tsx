@@ -15,6 +15,7 @@ export interface ProductCardData {
   rating?: number | null;
   reviewCount?: number | null;
   defaultVariant?: { id: string; label: string; price: number } | null;
+  variantCount?: number;
 }
 
 export default function ProductCard({ product }: { product: ProductCardData }) {
@@ -31,6 +32,13 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
     >
       <div className="relative aspect-square w-full overflow-hidden bg-ivoryDeep">
         {image ? (
+          // A second hover-swap image was tried here but reverted: these
+          // product photos are pre-composed marketing panels with very
+          // different baked-in text/layout between shots (hero vs.
+          // lifestyle vs. benefits), so swapping between them on hover
+          // made cards in the same row look inconsistent with each other
+          // rather than dynamic. A single consistent image per card reads
+          // as more uniform across a grid.
           <Image
             src={image.url}
             alt={image.altText}
@@ -64,7 +72,9 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
               name: product.name,
               image: image?.url ?? "",
               price: basePrice,
+              mrp,
               defaultVariant: product.defaultVariant,
+              variantCount: product.variantCount ?? (product.defaultVariant ? 1 : 0),
             }}
           />
         )}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
+import { useCartDrawer } from "@/context/CartDrawerContext";
 import { useAuth } from "@/context/AuthContext";
 import { useWishlist } from "@/context/WishlistContext";
 import AnnouncementBar from "@/components/header/AnnouncementBar";
@@ -14,6 +15,7 @@ import type { MegaMenuPreview } from "@/lib/megaMenuPreview";
 
 export default function Header() {
   const { itemCount } = useCart();
+  const { open: openCartDrawer } = useCartDrawer();
   const { customer } = useAuth();
   const { count: wishlistCount } = useWishlist();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -77,8 +79,9 @@ export default function Header() {
                 </span>
               )}
             </Link>
-            <Link
-              href="/cart"
+            <button
+              type="button"
+              onClick={openCartDrawer}
               className="relative flex items-center gap-2 rounded-card border border-gold/60 bg-card px-4 py-2 font-mulish text-sm font-semibold text-maroon shadow-soft transition-colors hover:border-gold"
             >
               Cart
@@ -87,7 +90,7 @@ export default function Header() {
                   {itemCount}
                 </span>
               )}
-            </Link>
+            </button>
           </div>
         </div>
 

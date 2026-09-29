@@ -12,7 +12,7 @@ export const DEFAULT_FAQS: FaqItem[] = [
   {
     question: "Can I choose which Rudraksha or gemstone is right for me?",
     answer:
-      "Yes — each product page lists its traditional significance, and our Astro Consultation service can help you choose based on your birth chart if you would like personalised guidance.",
+      "Yes — each product page lists its traditional significance and recommended use, so you can choose based on the intention or benefit you're looking for.",
   },
   {
     question: "Do you offer energisation (Prana Pratishtha) for malas and beads?",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { formatInr } from "@/lib/format";
@@ -39,6 +39,21 @@ export default function ProductPurchasePanel({
   );
   const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const ctaRef = useRef<HTMLDivElement>(null);
+
+  // Mobile only: once the main Add to Cart / Buy Now row scrolls out of
+  // view, show a compact sticky bar so buying never requires scrolling
+  // back up (e.g. after reading description/reviews further down the page).
+  useEffect(() => {
+    const el = ctaRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => setShowStickyBar(!entry.isIntersecting), {
+      threshold: 0,
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const selectedVariant = useMemo(
     () => variants.find((v) => v.id === selectedVariantId) ?? null,
@@ -55,6 +70,7 @@ export default function ProductPurchasePanel({
         name: productName,
         variantLabel: selectedVariant?.label ?? null,
         price: activePrice,
+        mrp,
         image,
         slug: productSlug,
       },
@@ -139,7 +155,7 @@ export default function ProductPurchasePanel({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div ref={ctaRef} className="flex flex-col gap-3 sm:flex-row">
         <button
           type="button"
           onClick={handleAddToCart}
@@ -155,6 +171,29 @@ export default function ProductPurchasePanel({
           Buy Now
         </button>
       </div>
+
+      {showStickyBar && (
+        <div className="fixed inset-x-0 bottom-14 z-30 flex items-center gap-3 border-t border-line bg-card px-4 py-3 shadow-soft md:hidden">
+          <div className="flex-1 overflow-hidden">
+            <p className="truncate font-mulish text-xs font-semibold text-ink">{productName}</p>
+            <p className="font-mulish text-sm font-extrabold text-maroon">{formatInr(activePrice)}</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="shrink-0 rounded-card border border-maroon px-4 py-2.5 font-mulish text-xs font-bold text-maroon"
+          >
+            {justAdded ? "Added ✓" : "Add to Cart"}
+          </button>
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            className="shrink-0 rounded-card bg-maroon px-4 py-2.5 font-mulish text-xs font-bold text-ivory shadow-soft"
+          >
+            Buy Now
+          </button>
+        </div>
+      )}
     </div>
   );
 }

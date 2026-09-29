@@ -141,12 +141,29 @@ model Order {
   razorpayPaymentId String?
   shippingAddressId String?
   shippingAddress   Address?    @relation(fields: [shippingAddressId], references: [id])
+  couponId          String?
+  coupon            Coupon?     @relation(fields: [couponId], references: [id])
+  discountAmount    Decimal?    @db.Decimal(10, 2)
   createdAt         DateTime    @default(now())
 
   items OrderItem[]
 
   @@index([customerId])
   @@index([status])
+}
+
+model Coupon {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  description     String?
+  discountPercent Int
+  // Orders below this subtotal (in INR) can't use the coupon. Null = no minimum.
+  minOrderValue   Decimal?  @db.Decimal(10, 2)
+  isActive        Boolean   @default(true)
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+
+  orders Order[]
 }
 
 model OrderItem {

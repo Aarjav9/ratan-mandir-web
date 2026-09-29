@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { createRazorpayOrder } from "@/lib/razorpay";
+import { validateCoupon } from "@/lib/coupons";
 
 const checkoutSchema = z.object({
   items: z
@@ -27,6 +28,9 @@ const checkoutSchema = z.object({
     state: z.string().min(1),
     pincode: z.string().min(4),
   }),
+  // Re-validated server-side below — the client never gets to assert its
+  // own discount amount, same principle as re-deriving item prices above.
+  couponCode: z.string().nullable().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -41,7 +45,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { items, shippingAddress } = parsed.data;
+    const { items, shippingAddress, couponCode } = parsed.data;
 
     // Re-fetch authoritative prices from the database rather than trusting
     // the client-supplied price on each cart line.
@@ -91,6 +95,18 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    let couponId: string | null = null;
+    let discountAmount = 0;
+    if (couponCode) {
+      const couponResult = await validateCoupon(couponCode, totalAmount);
+      if (!couponResult.valid) {
+        return NextResponse.json({ error: couponResult.message }, { status: 400 });
+      }
+      couponId = couponResult.couponId ?? null;
+      discountAmount = couponResult.discountAmount ?? 0;
+    }
+    const finalAmount = totalAmount - discountAmount;
+
     // Guest-friendly customer record: find-or-create by email so repeat
     // shoppers accumulate order history, without requiring a real login.
     // Real authentication (passwords, OTP, sessions) is a follow-up item.
@@ -121,14 +137,16 @@ export async function POST(request: NextRequest) {
         customerId: customer.id,
         shippingAddressId: address.id,
         status: "PENDING",
-        totalAmount,
+        totalAmount: finalAmount,
+        couponId,
+        discountAmount: couponId ? discountAmount : null,
         items: { create: orderItemsData },
       },
     });
 
     // amountInPaise: Razorpay expects amounts in the smallest currency unit.
     const razorpayOrder = await createRazorpayOrder({
-      amountInPaise: Math.round(totalAmount * 100),
+      amountInPaise: Math.round(finalAmount * 100),
       receipt: order.id,
       notes: { orderId: order.id, customerEmail: shippingAddress.email },
     });

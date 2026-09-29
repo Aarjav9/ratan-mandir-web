@@ -5,9 +5,13 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
+import { CartDrawerProvider } from "@/context/CartDrawerContext";
+import { CouponProvider } from "@/context/CouponContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import CartDrawer from "@/components/CartDrawer";
 
 const marcellus = Marcellus({
   subsets: ["latin"],
@@ -53,14 +57,20 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`${marcellus.variable} ${yatraOne.variable} ${mulish.variable}`}>
       <body className="font-mulish bg-ivory text-ink antialiased">
         <CartProvider>
-          <AuthProvider>
-            <WishlistProvider>
-              <Header />
-              <main className="pb-16 md:pb-0">{children}</main>
-              <Footer />
-              <ScrollToTopButton />
-            </WishlistProvider>
-          </AuthProvider>
+          <CartDrawerProvider>
+            <CouponProvider>
+              <AuthProvider>
+                <WishlistProvider>
+                  <Header />
+                  <main className="pb-16 md:pb-0">{children}</main>
+                  <Footer />
+                  <CartDrawer />
+                  <ScrollToTopButton />
+                  <WhatsAppButton />
+                </WishlistProvider>
+              </AuthProvider>
+            </CouponProvider>
+          </CartDrawerProvider>
         </CartProvider>
       </body>
     </html>

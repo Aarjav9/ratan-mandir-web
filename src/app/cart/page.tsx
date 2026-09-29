@@ -3,10 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import { useCoupon } from "@/context/CouponContext";
 import { formatInr } from "@/lib/format";
+import CouponField from "@/components/CouponField";
 
 export default function CartPage() {
   const { items, updateQty, removeItem, subtotal } = useCart();
+  const { coupon } = useCoupon();
+  const discountAmount = coupon ? Math.round(subtotal * (coupon.discountPercent / 100)) : 0;
+  const total = subtotal - discountAmount;
 
   if (items.length === 0) {
     return (
@@ -51,8 +56,11 @@ export default function CartPage() {
                 {item.variantLabel && (
                   <p className="mt-1 font-mulish text-xs text-inkSoft">{item.variantLabel}</p>
                 )}
-                <p className="mt-1 font-mulish text-sm font-bold text-maroon">
-                  {formatInr(item.price)}
+                <p className="mt-1 flex items-baseline gap-2 font-mulish text-sm">
+                  <span className="font-bold text-maroon">{formatInr(item.price)}</span>
+                  {!!item.mrp && item.mrp > item.price && (
+                    <span className="text-xs text-inkSoft line-through">{formatInr(item.mrp)}</span>
+                  )}
                 </p>
               </div>
 
@@ -93,9 +101,24 @@ export default function CartPage() {
 
         <div className="h-fit rounded-card border border-line bg-card p-6 shadow-soft">
           <h2 className="font-marcellus text-lg text-ink">Order Summary</h2>
+
+          <div className="mt-4">
+            <CouponField subtotal={subtotal} />
+          </div>
+
           <div className="mt-4 flex justify-between font-mulish text-sm text-inkSoft">
             <span>Subtotal</span>
-            <span className="font-semibold text-ink">{formatInr(subtotal)}</span>
+            <span className="text-ink">{formatInr(subtotal)}</span>
+          </div>
+          {coupon && (
+            <div className="mt-1 flex justify-between font-mulish text-sm text-inkSoft">
+              <span>Discount ({coupon.discountPercent}%)</span>
+              <span className="text-maroon">−{formatInr(discountAmount)}</span>
+            </div>
+          )}
+          <div className="mt-1 flex justify-between font-mulish text-sm">
+            <span className="font-semibold text-ink">Total</span>
+            <span className="font-extrabold text-maroon">{formatInr(total)}</span>
           </div>
           <p className="mt-2 font-mulish text-xs text-inkSoft">
             Shipping and any applicable taxes are calculated at checkout.

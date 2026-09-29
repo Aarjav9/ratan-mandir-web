@@ -68,6 +68,7 @@ async function getProductPageData(slug: string) {
     include: {
       images: { orderBy: { position: "asc" }, take: 1 },
       variants: { take: 1 },
+      _count: { select: { variants: true } },
     },
     take: 4,
   });
@@ -191,7 +192,7 @@ function getCategoryCrumb(
     return { name: `${mukhiNumber} Mukhi Rudraksha`, href: `/shop/${mukhiNumber}` };
   }
   if (categoryType === "GEMSTONE") {
-    return { name: "Gemstones", href: "/#navratna" };
+    return { name: "Gemstones", href: "/shop/gemstones" };
   }
   const category = getCategoryBySlug(CATEGORY_TYPE_TO_TAXONOMY_SLUG[categoryType] ?? "");
   return category ? { name: category.label, href: category.href } : { name: "Shop", href: "/" };
@@ -351,6 +352,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   productId: item.id,
                   rating: relatedRatings[item.id]?.rating ?? null,
                   reviewCount: relatedRatings[item.id]?.count ?? null,
+                  variantCount: item._count.variants,
                   defaultVariant: item.variants[0]
                     ? {
                         id: item.variants[0].id,
