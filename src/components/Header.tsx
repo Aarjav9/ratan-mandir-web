@@ -38,17 +38,12 @@ export default function Header() {
         <AnnouncementBar />
 
         <div className="container-page flex h-20 items-center gap-4">
-          <button
-            type="button"
-            onClick={() => setMobileNavOpen(true)}
-            aria-label="Open menu"
-            className="flex flex-col gap-1.5 p-1 md:hidden"
-          >
-            <span className="block h-0.5 w-6 bg-ink" />
-            <span className="block h-0.5 w-6 bg-ink" />
-            <span className="block h-0.5 w-6 bg-ink" />
-          </button>
-
+          {/* The hamburger (categories) and cart controls are intentionally
+              absent here on mobile — MobileStickyNav's bottom bar already
+              has both (Categories opens this same MobileNav drawer via
+              onOpenCategories; Cart opens the same drawer via
+              openCartDrawer), so showing them in the header too was pure
+              duplication on small screens. */}
           <Link href="/" className="flex flex-col leading-none">
             <span className="font-marcellus text-2xl text-maroon">Ratan Mandir</span>
             <span className="font-yatra mt-1 hidden text-xs tracking-wide text-inkSoft sm:block">
@@ -82,7 +77,7 @@ export default function Header() {
             <button
               type="button"
               onClick={openCartDrawer}
-              className="relative flex items-center gap-2 rounded-card border border-gold/60 bg-card px-4 py-2 font-mulish text-sm font-semibold text-maroon shadow-soft transition-colors hover:border-gold"
+              className="relative hidden items-center gap-2 rounded-card border border-gold/60 bg-card px-4 py-2 font-mulish text-sm font-semibold text-maroon shadow-soft transition-colors hover:border-gold md:flex"
             >
               Cart
               {itemCount > 0 && (

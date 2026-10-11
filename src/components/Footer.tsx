@@ -196,11 +196,9 @@ export default function Footer() {
               <Link href="/privacy-policy" className="hover:text-gold">
                 Privacy Policy
               </Link>
-              {/* Terms of Service stays a placeholder until the full Terms &
-                  Conditions text is provided — what was supplied cuts off
-                  mid-section, and publishing an incomplete contract page on
-                  a live site would be misleading. */}
-              <span className="cursor-default">Terms of Service</span>
+              <Link href="/terms-conditions" className="hover:text-gold">
+                Terms of Service
+              </Link>
               <Link href="/cancellation-refund-policy" className="hover:text-gold">
                 Cancellation &amp; Refund
               </Link>

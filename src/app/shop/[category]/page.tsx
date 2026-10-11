@@ -44,7 +44,7 @@ function FilterGroups({
             View all 1–18
           </Link>
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {Array.from({ length: MAX_MUKHI }, (_, i) => i + 1).map((m) => {
             const isActive = m === mukhiNumber;
             const hasStock = stocked.has(m);
@@ -53,7 +53,7 @@ function FilterGroups({
                 key={m}
                 href={`/shop/${m}`}
                 aria-current={isActive}
-                className={`flex h-9 w-9 items-center justify-center rounded-full border font-mulish text-sm font-bold transition-colors ${
+                className={`flex h-7 w-7 items-center justify-center rounded-full border font-mulish text-xs font-bold transition-colors ${
                   isActive
                     ? "border-maroon bg-maroon text-ivory"
                     : hasStock
@@ -65,21 +65,6 @@ function FilterGroups({
               </Link>
             );
           })}
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <p className="font-mulish text-xs font-bold uppercase tracking-wide text-inkSoft">Price</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {["Under ₹1,000", "₹1,000 – ₹5,000", "Above ₹5,000"].map((label) => (
-            <span
-              key={label}
-              className="cursor-default rounded-full border border-line bg-ivoryDeep px-3 py-1.5 font-mulish text-xs text-inkSoft"
-              title="Coming soon"
-            >
-              {label}
-            </span>
-          ))}
         </div>
       </div>
 
