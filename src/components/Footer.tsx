@@ -131,12 +131,19 @@ export default function Footer() {
             </Link>
           </li>
           <li>
-            {/* Follow-up: build a real /shipping page before launch. */}
-            <span className="cursor-default">Shipping &amp; Delivery</span>
+            <Link href="/shipping-policy" className="hover:text-gold">
+              Shipping &amp; Delivery
+            </Link>
           </li>
           <li>
-            {/* Follow-up: required by Razorpay for live activation — see README. */}
-            <span className="cursor-default">Returns &amp; Refund Policy</span>
+            <Link href="/replacement-policy" className="hover:text-gold">
+              Replacement Policy
+            </Link>
+          </li>
+          <li>
+            <Link href="/cancellation-refund-policy" className="hover:text-gold">
+              Cancellation &amp; Refund
+            </Link>
           </li>
           <li>
             <span className="cursor-default">Contact Us</span>
@@ -186,10 +193,17 @@ export default function Footer() {
           <div className="flex flex-col items-center gap-2 text-center font-mulish text-xs text-ivory/60 md:w-full md:flex-row md:justify-between md:text-left">
             <p>&copy; {new Date().getFullYear()} Ratan Mandir. All rights reserved.</p>
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-              {/* Legal pages required before live payments go active — see README checklist. */}
-              <span className="cursor-default">Privacy Policy</span>
+              <Link href="/privacy-policy" className="hover:text-gold">
+                Privacy Policy
+              </Link>
+              {/* Terms of Service stays a placeholder until the full Terms &
+                  Conditions text is provided — what was supplied cuts off
+                  mid-section, and publishing an incomplete contract page on
+                  a live site would be misleading. */}
               <span className="cursor-default">Terms of Service</span>
-              <span className="cursor-default">Refund Policy</span>
+              <Link href="/cancellation-refund-policy" className="hover:text-gold">
+                Cancellation &amp; Refund
+              </Link>
             </div>
             <p>Handled with reverence, shipped with care.</p>
           </div>
