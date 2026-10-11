@@ -57,7 +57,7 @@ export default function ProductGallery({ images }: { images: GalleryImage[] }) {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-3 md:max-w-none">
+    <div className="mx-auto flex w-full min-w-0 max-w-md flex-col gap-3 md:max-w-none">
       <div
         ref={containerRef}
         className="relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-card border border-line bg-ivoryDeep"
@@ -111,13 +111,13 @@ export default function ProductGallery({ images }: { images: GalleryImage[] }) {
         )}
       </div>
       {images.length > 1 && (
-        <div className="flex gap-3">
+        <div className="scrollbar-hide flex gap-3 overflow-x-auto">
           {images.map((image, index) => (
             <button
               key={image.url + index}
               type="button"
               onClick={() => handleThumbnailClick(index)}
-              className={`relative h-20 w-20 overflow-hidden rounded-card border transition-colors ${
+              className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-card border transition-colors ${
                 index === activeIndex ? "border-maroon" : "border-line"
               }`}
             >

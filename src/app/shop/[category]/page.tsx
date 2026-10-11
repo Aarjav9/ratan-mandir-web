@@ -6,6 +6,7 @@ import ProductCard from "@/components/ProductCard";
 import { getRatingsMap } from "@/lib/ratings";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const MAX_MUKHI = 18;
 
 // This route handles /shop/<mukhi number>, e.g. /shop/5. Named `[category]`
 // (not `[mukhi]`) purely because Next.js requires sibling dynamic segments
@@ -16,57 +17,84 @@ interface ShopMukhiPageProps {
   params: { category: string };
 }
 
-function FilterGroups({ mukhiNumber }: { mukhiNumber: number }) {
+// Beaded-mala-style pill picker — rounded, bead-like buttons rather than
+// a plain checkbox list, so the mukhi switcher reads as something unique to
+// a Rudraksha site rather than a generic e-commerce filter. `stockedMukhis`
+// (fetched live, same as the sitemap's query) decides which numbers get a
+// filled "live" look vs. a faint "coming soon" one — nothing here is
+// hardcoded to a fixed set of mukhis.
+function FilterGroups({
+  mukhiNumber,
+  stockedMukhis,
+}: {
+  mukhiNumber: number;
+  stockedMukhis: number[];
+}) {
+  const stocked = new Set(stockedMukhis);
+
   return (
     <>
       <div className="mt-5">
-        <p className="font-mulish text-xs font-bold uppercase tracking-wide text-inkSoft">
-          Mukhi
-        </p>
-        <div className="mt-2 flex flex-col gap-2 font-mulish text-sm text-ink">
-          {[1, 5, 7, 9].map((m) => (
-            <Link
-              key={m}
-              href={`/shop/${m}`}
-              className={m === mukhiNumber ? "font-bold text-maroon" : "hover:text-maroon"}
+        <div className="flex items-center justify-between">
+          <p className="font-mulish text-xs font-bold uppercase tracking-wide text-inkSoft">Mukhi</p>
+          <Link
+            href="/shop/rudraksha/mukhi"
+            className="font-mulish text-xs font-semibold text-maroon underline underline-offset-4 hover:text-maroonDeep"
+          >
+            View all 1–18
+          </Link>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {Array.from({ length: MAX_MUKHI }, (_, i) => i + 1).map((m) => {
+            const isActive = m === mukhiNumber;
+            const hasStock = stocked.has(m);
+            return (
+              <Link
+                key={m}
+                href={`/shop/${m}`}
+                aria-current={isActive}
+                className={`flex h-9 w-9 items-center justify-center rounded-full border font-mulish text-sm font-bold transition-colors ${
+                  isActive
+                    ? "border-maroon bg-maroon text-ivory"
+                    : hasStock
+                      ? "border-gold/50 bg-ivoryDeep text-ink hover:border-maroon hover:text-maroon"
+                      : "border-line bg-ivory text-inkSoft/50 hover:border-gold"
+                }`}
+              >
+                {m}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <p className="font-mulish text-xs font-bold uppercase tracking-wide text-inkSoft">Price</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {["Under ₹1,000", "₹1,000 – ₹5,000", "Above ₹5,000"].map((label) => (
+            <span
+              key={label}
+              className="cursor-default rounded-full border border-line bg-ivoryDeep px-3 py-1.5 font-mulish text-xs text-inkSoft"
+              title="Coming soon"
             >
-              {m} Mukhi
-            </Link>
+              {label}
+            </span>
           ))}
         </div>
       </div>
 
       <div className="mt-6">
-        <p className="font-mulish text-xs font-bold uppercase tracking-wide text-inkSoft">
-          Price
-        </p>
-        <div className="mt-2 flex flex-col gap-2 font-mulish text-sm text-inkSoft">
-          <label className="flex items-center gap-2">
-            <input type="checkbox" disabled /> Under ₹1,000
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" disabled /> ₹1,000 – ₹5,000
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" disabled /> Above ₹5,000
-          </label>
-        </div>
-      </div>
-
-      <div className="mt-6">
-        <p className="font-mulish text-xs font-bold uppercase tracking-wide text-inkSoft">
-          Format
-        </p>
-        <div className="mt-2 flex flex-col gap-2 font-mulish text-sm text-inkSoft">
-          <label className="flex items-center gap-2">
-            <input type="checkbox" disabled /> Mala
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" disabled /> Bracelet
-          </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" disabled /> Pendant
-          </label>
+        <p className="font-mulish text-xs font-bold uppercase tracking-wide text-inkSoft">Format</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {["Mala", "Bracelet", "Pendant"].map((label) => (
+            <span
+              key={label}
+              className="cursor-default rounded-full border border-line bg-ivoryDeep px-3 py-1.5 font-mulish text-xs text-inkSoft"
+              title="Coming soon"
+            >
+              {label}
+            </span>
+          ))}
         </div>
       </div>
     </>
@@ -75,7 +103,7 @@ function FilterGroups({ mukhiNumber }: { mukhiNumber: number }) {
 
 export async function generateMetadata({ params }: ShopMukhiPageProps): Promise<Metadata> {
   const mukhiNumber = parseInt(params.category, 10);
-  if (Number.isNaN(mukhiNumber) || mukhiNumber < 1 || mukhiNumber > 14) {
+  if (Number.isNaN(mukhiNumber) || mukhiNumber < 1 || mukhiNumber > MAX_MUKHI) {
     return { title: "Rudraksha — Ratan Mandir" };
   }
 
@@ -97,7 +125,7 @@ export async function generateMetadata({ params }: ShopMukhiPageProps): Promise<
 }
 
 async function getMukhiPageData(mukhiNumber: number) {
-  const [mukhiInfo, products] = await Promise.all([
+  const [mukhiInfo, products, stockedMukhiRows] = await Promise.all([
     prisma.mukhiInfo.findUnique({ where: { mukhiNumber } }),
     prisma.product.findMany({
       where: { mukhiNumber, categoryType: "RUDRAKSHA" },
@@ -108,21 +136,29 @@ async function getMukhiPageData(mukhiNumber: number) {
       },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.product.findMany({
+      where: { categoryType: "RUDRAKSHA", mukhiNumber: { not: null } },
+      distinct: ["mukhiNumber"],
+      select: { mukhiNumber: true },
+    }),
   ]);
 
   const ratings = await getRatingsMap(products.map((p) => p.id));
+  const stockedMukhis = stockedMukhiRows
+    .map((r) => r.mukhiNumber)
+    .filter((n): n is number => n !== null);
 
-  return { mukhiInfo, products, ratings };
+  return { mukhiInfo, products, ratings, stockedMukhis };
 }
 
 export default async function ShopMukhiPage({ params }: ShopMukhiPageProps) {
   const mukhiNumber = parseInt(params.category, 10);
 
-  if (Number.isNaN(mukhiNumber) || mukhiNumber < 1 || mukhiNumber > 14) {
+  if (Number.isNaN(mukhiNumber) || mukhiNumber < 1 || mukhiNumber > MAX_MUKHI) {
     notFound();
   }
 
-  const { mukhiInfo, products, ratings } = await getMukhiPageData(mukhiNumber);
+  const { mukhiInfo, products, ratings, stockedMukhis } = await getMukhiPageData(mukhiNumber);
 
   return (
     <div className="container-page py-12">
@@ -147,14 +183,14 @@ export default async function ShopMukhiPage({ params }: ShopMukhiPageProps) {
         )}
       </div>
 
-      <div className="grid gap-10 md:grid-cols-[240px_1fr]">
-        {/* Sidebar filters — static UI for now. Wiring up real filtering
-            (by size, price range, bead count, certification) is a follow-up
-            item once the catalog and query params are finalised.
-            On mobile this is a collapsed <details> dropdown, closed by
-            default, so the product grid is the first thing a visitor sees
-            instead of a tall filter panel pushing it below the fold.
-            Desktop keeps the always-expanded sidebar. */}
+      <div className="grid gap-10 md:grid-cols-[260px_1fr]">
+        {/* Sidebar filters — static UI for now beyond the mukhi picker.
+            Wiring up real filtering (by price range, bead count,
+            certification) is a follow-up item once query params are
+            finalised. On mobile this is a collapsed <details> dropdown,
+            closed by default, so the product grid is the first thing a
+            visitor sees instead of a tall filter panel pushing it below
+            the fold. Desktop keeps the always-expanded sidebar. */}
         <aside className="h-fit rounded-card border border-line bg-card shadow-soft md:p-6">
           <details className="group md:hidden">
             <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 font-marcellus text-base text-ink">
@@ -162,12 +198,12 @@ export default async function ShopMukhiPage({ params }: ShopMukhiPageProps) {
               <span className="font-mulish text-lg transition-transform group-open:rotate-45">+</span>
             </summary>
             <div className="border-t border-line px-5 pb-5">
-              <FilterGroups mukhiNumber={mukhiNumber} />
+              <FilterGroups mukhiNumber={mukhiNumber} stockedMukhis={stockedMukhis} />
             </div>
           </details>
           <div className="hidden md:block">
             <h2 className="font-marcellus text-base text-ink">Filter</h2>
-            <FilterGroups mukhiNumber={mukhiNumber} />
+            <FilterGroups mukhiNumber={mukhiNumber} stockedMukhis={stockedMukhis} />
           </div>
         </aside>
 

@@ -286,7 +286,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <span className="text-ink">{product.name}</span>
       </nav>
 
-      <div className="grid gap-12 lg:grid-cols-2">
+      <div className="grid min-w-0 gap-12 lg:grid-cols-2">
         <ProductGallery images={galleryImages} />
 
         <div className="flex flex-col gap-6">
