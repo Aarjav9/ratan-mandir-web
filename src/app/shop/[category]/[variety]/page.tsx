@@ -6,6 +6,7 @@ import ProductCard from "@/components/ProductCard";
 import { getRatingsMap } from "@/lib/ratings";
 import { getCategoryVarietyGroup, getCategoryVariety } from "@/lib/categoryVarieties";
 import { getCategoryBySlug } from "@/lib/categoryTaxonomy";
+import VarietyChipRail from "@/components/shop/VarietyChipRail";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -71,21 +72,11 @@ export default async function CategoryVarietyPage({ params }: CategoryVarietyPag
         <p className="mt-2 max-w-2xl font-mulish text-sm text-inkSoft">{variety.description}</p>
       </div>
 
-      <div className="mb-8 flex flex-wrap gap-3">
-        {siblingVarieties.map((v) => (
-          <Link
-            key={v.slug}
-            href={`/shop/${params.category}/${v.slug}`}
-            className={`rounded-card border px-4 py-2 font-mulish text-sm font-semibold transition-colors ${
-              v.slug === variety.slug
-                ? "border-maroon bg-maroon text-ivory"
-                : "border-line bg-card text-ink hover:border-gold"
-            }`}
-          >
-            {v.label}
-          </Link>
-        ))}
-      </div>
+      <VarietyChipRail
+        varieties={siblingVarieties}
+        activeSlug={variety.slug}
+        basePath={`/shop/${params.category}`}
+      />
 
       {products.length > 0 ? (
         <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
