@@ -31,7 +31,7 @@ export default async function MukhiPickerPage() {
           Home
         </Link>
         <span className="mx-2">/</span>
-        <Link href="/shop/5" className="hover:text-maroon">
+        <Link href="/shop/rudraksha" className="hover:text-maroon">
           Rudraksha
         </Link>
         <span className="mx-2">/</span>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import prisma from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
+import SearchBar from "@/components/header/SearchBar";
 import { getRatingsMap } from "@/lib/ratings";
 
 export const revalidate = 0;
@@ -48,23 +49,11 @@ export default async function SearchPage({
       {/* The header's own search bar is desktop-only (md:flex) and the mobile
           bottom-nav search icon links straight here — without an input on
           this page itself, a mobile visitor landing here has no way to
-          actually type a query. */}
-      <form action="/search" method="GET" className="mt-5 flex max-w-lg gap-2">
-        <input
-          type="search"
-          name="q"
-          defaultValue={query}
-          autoFocus
-          placeholder="Search for Rudraksha, gemstones, bracelets..."
-          className="min-w-0 flex-1 rounded-card border border-line bg-card px-4 py-3 font-mulish text-sm text-ink outline-none focus:border-maroon"
-        />
-        <button
-          type="submit"
-          className="shrink-0 rounded-card bg-maroon px-5 py-3 font-mulish text-sm font-bold text-ivory shadow-soft transition-colors hover:bg-maroonDeep"
-        >
-          Search
-        </button>
-      </form>
+          actually type a query. Reuses the same live-suggestions SearchBar
+          as the header, for consistent behavior everywhere. */}
+      <div className="mt-5 max-w-lg">
+        <SearchBar />
+      </div>
 
       <p className="mt-4 font-mulish text-sm text-inkSoft">
         {query
@@ -75,7 +64,7 @@ export default async function SearchPage({
       {query && products.length === 0 && (
         <p className="mt-10 font-mulish text-sm text-inkSoft">
           No products matched your search. Try a different term, or browse{" "}
-          <a href="/shop/5" className="font-bold text-maroon underline underline-offset-4">
+          <a href="/shop/rudraksha" className="font-bold text-maroon underline underline-offset-4">
             Rudraksha
           </a>{" "}
           and{" "}

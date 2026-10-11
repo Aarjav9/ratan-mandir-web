@@ -96,7 +96,7 @@ export default function HeroCarousel() {
               </p>
               <div className="flex animate-fade-up flex-wrap gap-4" style={{ animationDelay: "240ms" }}>
                 <Link
-                  href="/shop/5"
+                  href="/shop/rudraksha"
                   className="rounded-card bg-maroon px-7 py-3 font-mulish text-sm font-bold text-ivory shadow-soft transition-colors hover:bg-maroonDeep"
                 >
                   Explore Collection
@@ -169,7 +169,7 @@ export default function HeroCarousel() {
               exceptions.
             </p>
             <Link
-              href="/shop/5"
+              href="/shop/rudraksha"
               className="mt-2 rounded-card bg-gold px-7 py-3 font-mulish text-sm font-bold text-maroonDeep shadow-soft transition-colors hover:bg-saffron"
             >
               Shop Rudraksha

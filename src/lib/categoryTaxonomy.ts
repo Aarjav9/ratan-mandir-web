@@ -27,7 +27,7 @@ export const CATEGORY_TAXONOMY: CategoryTaxonomyItem[] = [
     label: "Rudraksha",
     shortCopy: "Lab-certified beads, malas and bracelets across every mukhi.",
     live: true,
-    href: "/shop/5",
+    href: "/shop/rudraksha",
     subItems: [
       { label: "Rudraksha Bracelets", href: "/shop/rudraksha/bracelets" },
       { label: "Rudraksha Malas", href: "/shop/rudraksha/malas" },
