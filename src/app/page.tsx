@@ -91,8 +91,17 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroCarousel />
-      <CategoryIconStrip />
+      {/* Mobile shows the category strip right under the header, above the
+          hero banner; desktop keeps the hero first. Visual order only
+          (flexbox `order`), so DOM/reading order is unaffected. */}
+      <div className="flex flex-col">
+        <div className="order-2 md:order-1">
+          <HeroCarousel />
+        </div>
+        <div className="order-1 md:order-2">
+          <CategoryIconStrip />
+        </div>
+      </div>
       <TrustStrip />
 
       {/* Most Loved — moved up to right after the banner, replacing the

@@ -51,14 +51,14 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
             Image coming soon
           </div>
         )}
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+        <div className="absolute left-1.5 top-1.5 flex flex-col gap-1 sm:left-3 sm:top-3 sm:gap-1.5">
           {product.badge && (
-            <span className="rounded-full bg-maroon px-3 py-1 font-mulish text-[11px] font-bold uppercase tracking-wide text-ivory">
+            <span className="rounded-full bg-maroon px-1.5 py-0.5 font-mulish text-[8px] font-bold uppercase tracking-wide text-ivory sm:px-3 sm:py-1 sm:text-[11px]">
               {product.badge}
             </span>
           )}
           {discountPct && discountPct > 0 && (
-            <span className="rounded-full bg-saffronDeep px-3 py-1 font-mulish text-[11px] font-bold uppercase tracking-wide text-ivory">
+            <span className="rounded-full bg-saffronDeep px-1.5 py-0.5 font-mulish text-[8px] font-bold uppercase tracking-wide text-ivory sm:px-3 sm:py-1 sm:text-[11px]">
               Save {discountPct}%
             </span>
           )}
