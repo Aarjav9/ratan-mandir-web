@@ -56,6 +56,17 @@ export default function Header() {
           </div>
 
           <div className="ml-auto flex items-center gap-3">
+            {/* Desktop gets the text pill; mobile previously had no login
+                entry point at all other than scrolling to the bottom of
+                the categories drawer — this icon makes it directly visible
+                in the header on every screen size. */}
+            <Link
+              href={customer ? "/account/orders" : "/account/login"}
+              aria-label={customer ? "Your account" : "Login"}
+              className="flex items-center rounded-card border border-gold/60 bg-card p-2.5 text-maroon shadow-soft transition-colors hover:border-gold md:hidden"
+            >
+              <PersonIcon />
+            </Link>
             <Link
               href={customer ? "/account/orders" : "/account/login"}
               className="hidden rounded-card border border-gold/60 bg-card px-4 py-2 font-mulish text-sm font-semibold text-maroon shadow-soft transition-colors hover:border-gold md:block"
@@ -111,6 +122,15 @@ function HeartIcon() {
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function PersonIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M4.5 20c1.2-3.8 4.2-6 7.5-6s6.3 2.2 7.5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
