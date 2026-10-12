@@ -1,22 +1,11 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import ImageRowEditor, { type ImageRow } from "@/components/admin/ImageRowEditor";
-import { formatInr } from "@/lib/format";
-
-const CATEGORY_OPTIONS: { value: string; label: string }[] = [
-  { value: "RUDRAKSHA", label: "Rudraksha" },
-  { value: "GEMSTONE", label: "Gemstone" },
-  { value: "ENERGY_STONE", label: "Energy Stone" },
-  { value: "SPIRITUAL_JEWELLERY", label: "Spiritual Jewellery" },
-  { value: "KARUNGALI", label: "Karungali" },
-  { value: "VASTU", label: "Vastu" },
-  { value: "ZODIAC", label: "Zodiac" },
-  { value: "GIFT_HAMPER", label: "Gift Hamper" },
-];
-
-const EMPTY_NEW_VARIANT = { label: "", priceOverride: "", stock: "0" };
+import ProductFormFields, { FormSection, type ProductFormValues } from "@/components/admin/ProductFormFields";
+import VariantRowsEditor, { type VariantFormRow } from "@/components/admin/VariantRowsEditor";
+import VariantEditor from "@/components/admin/VariantEditor";
+import FormActionBar from "@/components/admin/FormActionBar";
 
 interface ProductDetail {
   id: string;
@@ -40,18 +29,9 @@ export default function EditProductPage() {
   const [loaded, setLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [categoryType, setCategoryType] = useState("RUDRAKSHA");
-  const [basePrice, setBasePrice] = useState("");
-  const [mrp, setMrp] = useState("");
-  const [origin, setOrigin] = useState("");
-  const [badge, setBadge] = useState("");
-  const [isBestseller, setIsBestseller] = useState(false);
-  const [isActive, setIsActive] = useState(true);
-  const [images, setImages] = useState<ImageRow[]>([]);
+  const [values, setValues] = useState<ProductFormValues | null>(null);
   const [existingVariants, setExistingVariants] = useState<ProductDetail["variants"]>([]);
-  const [newVariants, setNewVariants] = useState<typeof EMPTY_NEW_VARIANT[]>([]);
+  const [newVariants, setNewVariants] = useState<VariantFormRow[]>([]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,35 +45,37 @@ export default function EditProductPage() {
       })
       .then((data: { product: ProductDetail }) => {
         const p = data.product;
-        setName(p.name);
-        setDescription(p.description);
-        setCategoryType(p.categoryType);
-        setBasePrice(p.basePrice);
-        setMrp(p.mrp ?? "");
-        setOrigin(p.origin ?? "");
-        setBadge(p.badge ?? "");
-        setIsBestseller(p.isBestseller);
-        setIsActive(p.isActive);
-        setImages(p.images);
+        setValues({
+          name: p.name,
+          description: p.description,
+          categoryType: p.categoryType,
+          basePrice: p.basePrice,
+          mrp: p.mrp ?? "",
+          origin: p.origin ?? "",
+          badge: p.badge ?? "",
+          isBestseller: p.isBestseller,
+          isActive: p.isActive,
+          images: p.images,
+        });
         setExistingVariants(p.variants);
         setLoaded(true);
       })
       .catch((err) => setLoadError(err instanceof Error ? err.message : "Something went wrong."));
   }, [params.id]);
 
-  const updateNewVariant = (index: number, field: keyof typeof EMPTY_NEW_VARIANT) => (e: ChangeEvent<HTMLInputElement>) => {
-    setNewVariants((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: e.target.value } : row)));
-  };
+  const patch = (next: Partial<ProductFormValues>) =>
+    setValues((prev) => (prev ? { ...prev, ...next } : prev));
 
   const handleSubmit = async () => {
+    if (!values) return;
     setError(null);
     setSaved(false);
 
-    if (!name.trim() || !description.trim() || !basePrice.trim()) {
+    if (!values.name.trim() || !values.description.trim() || !values.basePrice.trim()) {
       setError("Please fill in name, description and base price.");
       return;
     }
-    if (images.some((img) => !img.url.trim() || !img.altText.trim())) {
+    if (values.images.some((img) => !img.url.trim() || !img.altText.trim())) {
       setError("Every image needs a URL and alt text (or remove the row).");
       return;
     }
@@ -108,16 +90,16 @@ export default function EditProductPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name.trim(),
-          description: description.trim(),
-          categoryType,
-          basePrice: Number(basePrice),
-          mrp: mrp.trim() ? Number(mrp) : null,
-          origin: origin.trim() || null,
-          badge: badge.trim() || null,
-          isBestseller,
-          isActive,
-          images: images.map((img) => ({ url: img.url.trim(), altText: img.altText.trim() })),
+          name: values.name.trim(),
+          description: values.description.trim(),
+          categoryType: values.categoryType,
+          basePrice: Number(values.basePrice),
+          mrp: values.mrp.trim() ? Number(values.mrp) : null,
+          origin: values.origin.trim() || null,
+          badge: values.badge.trim() || null,
+          isBestseller: values.isBestseller,
+          isActive: values.isActive,
+          images: values.images.map((img) => ({ url: img.url.trim(), altText: img.altText.trim() })),
           ...(newVariants.length > 0 && {
             newVariants: newVariants.map((v) => ({
               label: v.label.trim(),
@@ -133,6 +115,10 @@ export default function EditProductPage() {
         throw new Error(body.error ?? "Could not save changes.");
       }
 
+      const body = await res.json();
+      if (newVariants.length > 0) {
+        setExistingVariants(body.product.variants);
+      }
       setNewVariants([]);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
@@ -144,7 +130,7 @@ export default function EditProductPage() {
   };
 
   if (loadError) return <p className="text-sm text-maroon">{loadError}</p>;
-  if (!loaded) return <p className="text-sm text-inkSoft">Loading...</p>;
+  if (!loaded || !values) return <p className="text-sm text-inkSoft">Loading...</p>;
 
   return (
     <div>
@@ -159,184 +145,52 @@ export default function EditProductPage() {
         </button>
       </div>
 
-      <div className="flex max-w-2xl flex-col gap-5 rounded-card border border-line bg-card p-6 shadow-soft">
-        <Field label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+      <div className="flex max-w-3xl flex-col gap-6">
+        <ProductFormFields values={values} onChange={patch} />
 
-        <label className="flex flex-col gap-1.5">
-          <span className="font-mulish text-xs font-semibold text-inkSoft">
-            Description<span className="text-maroon"> *</span>
-          </span>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"
-          />
-        </label>
+        <FormSection title="Variants" description="A variant already used in a past order can't be removed — set its stock to 0 instead.">
+          {existingVariants.length > 0 ? (
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-inkSoft">
+                  <th className="py-2 pr-4">Variant</th>
+                  <th className="py-2 pr-4">Stock</th>
+                  <th className="py-2 pr-4">Price Override</th>
+                  <th className="py-2 pr-4">Save</th>
+                </tr>
+              </thead>
+              <tbody>
+                {existingVariants.map((v) => (
+                  <VariantEditor
+                    key={v.id}
+                    variant={v}
+                    onDeleted={
+                      existingVariants.length > 1
+                        ? () => setExistingVariants((prev) => prev.filter((row) => row.id !== v.id))
+                        : undefined
+                    }
+                  />
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="font-mulish text-xs text-inkSoft">No variants yet.</p>
+          )}
 
-        <label className="flex flex-col gap-1.5">
-          <span className="font-mulish text-xs font-semibold text-inkSoft">Category</span>
-          <select
-            value={categoryType}
-            onChange={(e) => setCategoryType(e.target.value)}
-            className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"
-          >
-            {CATEGORY_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Base Price (₹)" type="number" value={basePrice} onChange={(e) => setBasePrice(e.target.value)} required />
-          <Field label="MRP (₹, optional)" type="number" value={mrp} onChange={(e) => setMrp(e.target.value)} />
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Origin (optional)" value={origin} onChange={(e) => setOrigin(e.target.value)} />
-          <Field label="Badge (optional)" value={badge} onChange={(e) => setBadge(e.target.value)} />
-        </div>
-
-        <label className="flex items-center gap-2 font-mulish text-sm text-ink">
-          <input type="checkbox" checked={isBestseller} onChange={(e) => setIsBestseller(e.target.checked)} />
-          Mark as bestseller
-        </label>
-
-        <label className="flex items-center gap-2 font-mulish text-sm text-ink">
-          <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
-          Active (visible on the storefront)
-        </label>
-
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <span className="font-mulish text-xs font-semibold text-inkSoft">Images</span>
-            <button
-              type="button"
-              onClick={() => setImages((prev) => [...prev, { url: "", altText: "" }])}
-              className="font-mulish text-xs font-bold text-maroon underline underline-offset-4"
-            >
-              + Add Image
-            </button>
+          <div className="border-t border-line pt-4">
+            <span className="mb-2 block font-mulish text-xs font-semibold text-inkSoft">Add New Variant</span>
+            <VariantRowsEditor rows={newVariants} onChange={setNewVariants} minRows={0} />
           </div>
-          <div className="flex flex-col gap-3">
-            {images.map((img, i) => (
-              <ImageRowEditor
-                key={i}
-                value={img}
-                onChange={(next) => setImages((prev) => prev.map((row, idx) => (idx === i ? next : row)))}
-                onRemove={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
-                removeDisabled={images.length === 1}
-              />
-            ))}
-          </div>
-        </div>
+        </FormSection>
 
-        <div>
-          <span className="font-mulish text-xs font-semibold text-inkSoft">Existing Variants</span>
-          <p className="mt-1 font-mulish text-[11px] text-inkSoft">
-            Edit stock and price for these from the Products list page — they aren&apos;t removable here since
-            past orders may already reference them.
-          </p>
-          <div className="mt-2 flex flex-col gap-1.5">
-            {existingVariants.map((v) => (
-              <div key={v.id} className="flex items-center justify-between rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-xs text-inkSoft">
-                <span>{v.label}</span>
-                <span>
-                  Stock: {v.stock} {v.priceOverride && `· ${formatInr(v.priceOverride)}`}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <span className="font-mulish text-xs font-semibold text-inkSoft">Add New Variant</span>
-            <button
-              type="button"
-              onClick={() => setNewVariants((prev) => [...prev, { ...EMPTY_NEW_VARIANT }])}
-              className="font-mulish text-xs font-bold text-maroon underline underline-offset-4"
-            >
-              + Add Variant
-            </button>
-          </div>
-          <div className="flex flex-col gap-3">
-            {newVariants.map((variant, i) => (
-              <div key={i} className="grid grid-cols-[1fr_100px_80px_auto] gap-2">
-                <input
-                  placeholder="Label (e.g. Standard)"
-                  value={variant.label}
-                  onChange={updateNewVariant(i, "label")}
-                  className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"
-                />
-                <input
-                  placeholder="Price"
-                  type="number"
-                  value={variant.priceOverride}
-                  onChange={updateNewVariant(i, "priceOverride")}
-                  className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"
-                />
-                <input
-                  placeholder="Stock"
-                  type="number"
-                  value={variant.stock}
-                  onChange={updateNewVariant(i, "stock")}
-                  className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"
-                />
-                <button
-                  type="button"
-                  onClick={() => setNewVariants((prev) => prev.filter((_, idx) => idx !== i))}
-                  className="rounded-card border border-line px-3 text-xs text-inkSoft"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {error && <p className="font-mulish text-xs text-maroon">{error}</p>}
-
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="rounded-card bg-maroon px-6 py-3 font-mulish text-sm font-bold text-ivory shadow-soft transition-colors hover:bg-maroonDeep disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isSubmitting ? "Saving..." : saved ? "Saved ✓" : "Save Changes"}
-        </button>
+        <FormActionBar
+          onSave={handleSubmit}
+          isSubmitting={isSubmitting}
+          savedLabel={saved ? "Saved ✓" : undefined}
+          idleLabel="Save Changes"
+          error={error}
+        />
       </div>
     </div>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  type = "text",
-  required = false,
-}: {
-  label: string;
-  value: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  type?: string;
-  required?: boolean;
-}) {
-  return (
-    <label className="flex flex-col gap-1.5">
-      <span className="font-mulish text-xs font-semibold text-inkSoft">
-        {label}
-        {required && <span className="text-maroon"> *</span>}
-      </span>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"
-      />
-    </label>
   );
 }

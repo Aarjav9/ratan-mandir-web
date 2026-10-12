@@ -29,11 +29,13 @@ export default function ProductActiveToggle({ productId, isActive }: { productId
       type="button"
       onClick={handleToggle}
       disabled={isSaving}
-      className={`rounded-full px-3 py-1 font-mulish text-[11px] font-bold uppercase tracking-wide transition-colors disabled:opacity-60 ${
+      title={active ? "Click to deactivate" : "Click to activate"}
+      className={`group w-24 rounded-full px-3 py-1 font-mulish text-[11px] font-bold uppercase tracking-wide transition-colors disabled:opacity-60 ${
         active ? "bg-maroon text-ivory hover:bg-maroonDeep" : "border border-line bg-ivoryDeep text-inkSoft hover:border-gold"
       }`}
     >
-      {active ? "Active" : "Inactive"}
+      <span className="group-hover:hidden">{isSaving ? "..." : active ? "Active" : "Inactive"}</span>
+      <span className="hidden group-hover:inline">{active ? "Deactivate" : "Activate"}</span>
     </button>
   );
 }

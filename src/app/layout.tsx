@@ -2,16 +2,12 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Marcellus, Yatra_One, Mulish } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawerProvider } from "@/context/CartDrawerContext";
 import { CouponProvider } from "@/context/CouponContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { WishlistProvider } from "@/context/WishlistContext";
-import ScrollToTopButton from "@/components/ScrollToTopButton";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import CartDrawer from "@/components/CartDrawer";
+import SiteChrome from "@/components/SiteChrome";
 
 const marcellus = Marcellus({
   subsets: ["latin"],
@@ -61,12 +57,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <CouponProvider>
               <AuthProvider>
                 <WishlistProvider>
-                  <Header />
-                  <main className="pb-16 md:pb-0">{children}</main>
-                  <Footer />
-                  <CartDrawer />
-                  <ScrollToTopButton />
-                  <WhatsAppButton />
+                  <SiteChrome>{children}</SiteChrome>
                 </WishlistProvider>
               </AuthProvider>
             </CouponProvider>

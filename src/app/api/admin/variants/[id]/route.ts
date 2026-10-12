@@ -28,3 +28,40 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     return NextResponse.json({ error: "Variant not found" }, { status: 404 });
   }
 }
+
+// Only deletable if no past order ever referenced it — otherwise that
+// OrderItem.variantId would point at nothing, which would break the order
+// history view. Set stock to 0 instead if it's been ordered before.
+export async function DELETE(_request: NextRequest, { params }: { params: { id: string } }) {
+  if (!(await requireAdmin())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const variant = await prisma.productVariant.findUnique({ where: { id: params.id } });
+  if (!variant) {
+    return NextResponse.json({ error: "Variant not found" }, { status: 404 });
+  }
+
+  const orderItemCount = await prisma.orderItem.count({ where: { variantId: params.id } });
+  if (orderItemCount > 0) {
+    return NextResponse.json(
+      { error: "This variant is part of a past order and can't be removed — set its stock to 0 instead." },
+      { status: 409 }
+    );
+  }
+
+  const siblingCount = await prisma.productVariant.count({ where: { productId: variant.productId } });
+  if (siblingCount <= 1) {
+    return NextResponse.json(
+      { error: "A product needs at least one variant — add another before removing this one." },
+      { status: 409 }
+    );
+  }
+
+  try {
+    await prisma.productVariant.delete({ where: { id: params.id } });
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ error: "Variant not found" }, { status: 404 });
+  }
+}

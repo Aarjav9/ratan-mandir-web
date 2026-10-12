@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import OrderStatusSelect from "@/components/admin/OrderStatusSelect";
 import { formatInr } from "@/lib/format";
 
@@ -53,7 +54,14 @@ export default function AdminOrdersPage() {
             <tbody>
               {orders.map((order) => (
                 <tr key={order.id} className="border-b border-line text-sm last:border-0">
-                  <td className="px-4 py-3 text-inkSoft">{order.id.slice(-8).toUpperCase()}</td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="font-mulish font-semibold text-maroon underline underline-offset-4 hover:text-maroonDeep"
+                    >
+                      {order.id.slice(-8).toUpperCase()}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">
                     {order.customer ? (
                       <div>

@@ -55,6 +55,17 @@ export default function ImageRowEditor({
               No image
             </div>
           )}
+          {value.url && (
+            <button
+              type="button"
+              onClick={onRemove}
+              disabled={removeDisabled}
+              title={removeDisabled ? "At least one image is required" : "Remove this image"}
+              className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink/70 text-xs font-bold leading-none text-ivory hover:bg-maroon disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              ×
+            </button>
+          )}
         </div>
 
         <div className="flex flex-1 flex-col gap-2">
@@ -69,7 +80,8 @@ export default function ImageRowEditor({
               type="button"
               onClick={onRemove}
               disabled={removeDisabled}
-              className="shrink-0 rounded-card border border-line px-3 text-xs text-inkSoft disabled:opacity-40"
+              title={removeDisabled ? "At least one image is required" : "Remove this image"}
+              className="shrink-0 rounded-card border border-line px-3 text-xs text-inkSoft disabled:cursor-not-allowed disabled:opacity-40"
             >
               Remove
             </button>

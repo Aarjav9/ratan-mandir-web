@@ -7,7 +7,10 @@ import { usePathname, useRouter } from "next/navigation";
 const NAV_LINKS = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/products", label: "Products" },
+  { href: "/admin/coupons", label: "Coupons" },
   { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/customers", label: "Customers" },
+  { href: "/admin/reviews", label: "Reviews" },
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -36,22 +39,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-ivory font-mulish text-ink">
       <header className="border-b border-line bg-card">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-4">
           <span className="font-marcellus text-lg text-maroonDeep">Ratan Mandir Admin</span>
-          <nav className="flex items-center gap-6">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-semibold transition-colors hover:text-maroon ${
-                  (link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href))
-                    ? "text-maroon"
-                    : "text-inkSoft"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="flex items-center gap-4">
             {adminEmail && <span className="font-mulish text-xs text-inkSoft">{adminEmail}</span>}
             <button
               type="button"
@@ -60,10 +50,25 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             >
               Log Out
             </button>
-          </nav>
+          </div>
         </div>
+        <nav className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 px-6 pb-4">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`text-sm font-semibold transition-colors hover:text-maroon ${
+                (link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href))
+                  ? "text-maroon"
+                  : "text-inkSoft"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
       </header>
-      <main className="mx-auto max-w-5xl px-6 py-8">{children}</main>
+      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
     </div>
   );
 }
