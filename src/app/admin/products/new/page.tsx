@@ -2,6 +2,7 @@
 
 import { useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
+import ImageRowEditor, { type ImageRow } from "@/components/admin/ImageRowEditor";
 
 const CATEGORY_OPTIONS: { value: string; label: string }[] = [
   { value: "RUDRAKSHA", label: "Rudraksha" },
@@ -13,11 +14,6 @@ const CATEGORY_OPTIONS: { value: string; label: string }[] = [
   { value: "ZODIAC", label: "Zodiac" },
   { value: "GIFT_HAMPER", label: "Gift Hamper" },
 ];
-
-interface ImageRow {
-  url: string;
-  altText: string;
-}
 
 interface VariantRow {
   label: string;
@@ -39,15 +35,12 @@ export default function NewProductPage() {
   const [origin, setOrigin] = useState("");
   const [badge, setBadge] = useState("");
   const [isBestseller, setIsBestseller] = useState(false);
+  const [isActive, setIsActive] = useState(true);
   const [images, setImages] = useState<ImageRow[]>([{ ...EMPTY_IMAGE }]);
   const [variants, setVariants] = useState<VariantRow[]>([{ ...EMPTY_VARIANT }]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const updateImage = (index: number, field: keyof ImageRow) => (e: ChangeEvent<HTMLInputElement>) => {
-    setImages((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: e.target.value } : row)));
-  };
 
   const updateVariant = (index: number, field: keyof VariantRow) => (e: ChangeEvent<HTMLInputElement>) => {
     setVariants((prev) => prev.map((row, i) => (i === index ? { ...row, [field]: e.target.value } : row)));
@@ -83,6 +76,7 @@ export default function NewProductPage() {
           origin: origin.trim() || undefined,
           badge: badge.trim() || undefined,
           isBestseller,
+          isActive,
           images: images.map((img) => ({ url: img.url.trim(), altText: img.altText.trim() })),
           variants: variants.map((v) => ({
             label: v.label.trim(),
@@ -154,6 +148,11 @@ export default function NewProductPage() {
           Mark as bestseller
         </label>
 
+        <label className="flex items-center gap-2 font-mulish text-sm text-ink">
+          <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+          Active (visible on the storefront)
+        </label>
+
         <div>
           <div className="mb-2 flex items-center justify-between">
             <span className="font-mulish text-xs font-semibold text-inkSoft">Images</span>
@@ -167,28 +166,13 @@ export default function NewProductPage() {
           </div>
           <div className="flex flex-col gap-3">
             {images.map((img, i) => (
-              <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
-                <input
-                  placeholder="/images/placeholder/example.jpg"
-                  value={img.url}
-                  onChange={updateImage(i, "url")}
-                  className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"
-                />
-                <input
-                  placeholder="Alt text"
-                  value={img.altText}
-                  onChange={updateImage(i, "altText")}
-                  className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"
-                />
-                <button
-                  type="button"
-                  onClick={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
-                  disabled={images.length === 1}
-                  className="rounded-card border border-line px-3 text-xs text-inkSoft disabled:opacity-40"
-                >
-                  Remove
-                </button>
-              </div>
+              <ImageRowEditor
+                key={i}
+                value={img}
+                onChange={(next) => setImages((prev) => prev.map((row, idx) => (idx === i ? next : row)))}
+                onRemove={() => setImages((prev) => prev.filter((_, idx) => idx !== i))}
+                removeDisabled={images.length === 1}
+              />
             ))}
           </div>
         </div>

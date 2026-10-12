@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     include: { images: { orderBy: { position: "asc" }, take: 1 } },
   });
 
-  if (!product) {
+  if (!product || !product.isActive) {
     return { title: "Product Not Found — Ratan Mandir" };
   }
 
@@ -55,11 +55,12 @@ async function getProductPageData(slug: string) {
     },
   });
 
-  if (!product) return { product: null, related: [], relatedRatings: {} };
+  if (!product || !product.isActive) return { product: null, related: [], relatedRatings: {} };
 
   const related = await prisma.product.findMany({
     where: {
       id: { not: product.id },
+      isActive: true,
       OR: [
         product.mukhiNumber ? { mukhiNumber: product.mukhiNumber } : undefined,
         { categoryType: product.categoryType },

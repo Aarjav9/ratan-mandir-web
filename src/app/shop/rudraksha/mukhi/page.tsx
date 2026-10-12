@@ -15,7 +15,7 @@ export default async function MukhiPickerPage() {
   const [mukhiInfos, stockedMukhiRows] = await Promise.all([
     prisma.mukhiInfo.findMany({ orderBy: { mukhiNumber: "asc" } }),
     prisma.product.findMany({
-      where: { categoryType: "RUDRAKSHA", mukhiNumber: { not: null } },
+      where: { categoryType: "RUDRAKSHA", mukhiNumber: { not: null }, isActive: true },
       distinct: ["mukhiNumber"],
       select: { mukhiNumber: true },
     }),

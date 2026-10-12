@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function GemstonesPage() {
   const products = await prisma.product.findMany({
-    where: { categoryType: "GEMSTONE" },
+    where: { categoryType: "GEMSTONE", isActive: true },
     include: {
       images: { orderBy: { position: "asc" }, take: 1 },
       variants: { take: 1 },

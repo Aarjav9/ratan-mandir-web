@@ -5,14 +5,15 @@ import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     setError(null);
-    if (!password) {
-      setError("Please enter the admin password.");
+    if (!email.trim() || !password) {
+      setError("Please enter your admin email and password.");
       return;
     }
     setIsSubmitting(true);
@@ -20,13 +21,13 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error ?? "Could not log in.");
       }
-      router.push("/admin/products");
+      router.push("/admin");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -43,9 +44,21 @@ export default function AdminLoginPage() {
         <h1 className="font-marcellus text-2xl text-maroonDeep">Admin Login</h1>
 
         <label className="flex flex-col gap-1.5">
+          <span className="font-mulish text-xs font-semibold text-inkSoft">Email</span>
+          <input
+            type="email"
+            autoComplete="username"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"
+          />
+        </label>
+
+        <label className="flex flex-col gap-1.5">
           <span className="font-mulish text-xs font-semibold text-inkSoft">Password</span>
           <input
             type="password"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="rounded-card border border-line bg-ivory px-3 py-2 font-mulish text-sm text-ink outline-none focus:border-gold"

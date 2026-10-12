@@ -43,6 +43,11 @@ model Product {
   origin       String?
   isCertified  Boolean      @default(true)
   isBestseller Boolean      @default(false)
+  // Toggled from the admin panel. Inactive products are hidden from every
+  // storefront listing/search/sitemap and 404 on direct PDP visits, but
+  // stay in the database (and any past orders referencing them), so this
+  // is a visibility switch, not a delete.
+  isActive     Boolean      @default(true)
   badge        String?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -98,6 +103,18 @@ model GemstoneInfo {
   sanskritName String
   planet       String
   colorHex     String
+}
+
+// Real per-admin accounts (email + hashed password), replacing the old
+// single shared ADMIN_PASSWORD-only login. Seeded from ADMIN_EMAIL /
+// ADMIN_PASSWORD env vars — see prisma/seed.ts — rather than a public
+// signup flow, since this is an internal/operator-only panel.
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
 }
 
 model Customer {

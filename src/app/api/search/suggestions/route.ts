@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
 
   const products = await prisma.product.findMany({
     where: {
+      isActive: true,
       OR: [
         { name: { contains: query, mode: "insensitive" } },
         { description: { contains: query, mode: "insensitive" } },

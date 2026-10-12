@@ -33,7 +33,7 @@ const PREVIEW_COUNT_PER_VARIETY = 3;
 
 async function buildVarietyPreview(where: Prisma.ProductWhereInput): Promise<MenuPreviewProduct[]> {
   const products = await prisma.product.findMany({
-    where,
+    where: { isActive: true, ...where },
     include: { images: { orderBy: { position: "asc" }, take: 1 } },
     orderBy: [{ isBestseller: "desc" }, { createdAt: "desc" }],
     take: PREVIEW_COUNT_PER_VARIETY,
@@ -55,6 +55,7 @@ export async function getMegaMenuPreview(): Promise<MegaMenuPreview> {
 
   // Layer 1: category-level defaults.
   const products = await prisma.product.findMany({
+    where: { isActive: true },
     include: { images: { orderBy: { position: "asc" }, take: 1 } },
     orderBy: [{ isBestseller: "desc" }, { createdAt: "desc" }],
   });

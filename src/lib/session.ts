@@ -9,7 +9,7 @@ if (!process.env.SESSION_SECRET) {
 
 const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
 
-export type AdminSessionPayload = { role: "admin" };
+export type AdminSessionPayload = { role: "admin"; adminId: string; email: string };
 export type CustomerSessionPayload = {
   role: "customer";
   customerId: string;
@@ -17,8 +17,8 @@ export type CustomerSessionPayload = {
 };
 export type SessionPayload = AdminSessionPayload | CustomerSessionPayload;
 
-export async function signAdminSession(): Promise<string> {
-  return new SignJWT({ role: "admin" })
+export async function signAdminSession(payload: Omit<AdminSessionPayload, "role">): Promise<string> {
+  return new SignJWT({ role: "admin", ...payload })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
@@ -38,8 +38,8 @@ export async function signCustomerSession(
 export async function verifySession(token: string): Promise<SessionPayload | null> {
   try {
     const { payload } = await jwtVerify(token, secret);
-    if (payload.role === "admin") {
-      return { role: "admin" };
+    if (payload.role === "admin" && typeof payload.adminId === "string" && typeof payload.email === "string") {
+      return { role: "admin", adminId: payload.adminId, email: payload.email };
     }
     if (payload.role === "customer" && typeof payload.customerId === "string" && typeof payload.email === "string") {
       return { role: "customer", customerId: payload.customerId, email: payload.email };

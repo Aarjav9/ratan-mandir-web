@@ -48,7 +48,7 @@ async function getMukhiPageData(mukhiNumber: number) {
   const [mukhiInfo, products, stockedMukhiRows] = await Promise.all([
     prisma.mukhiInfo.findUnique({ where: { mukhiNumber } }),
     prisma.product.findMany({
-      where: { mukhiNumber, categoryType: "RUDRAKSHA" },
+      where: { mukhiNumber, categoryType: "RUDRAKSHA", isActive: true },
       include: {
         images: { orderBy: { position: "asc" }, take: 1 },
         variants: { take: 1 },
@@ -57,7 +57,7 @@ async function getMukhiPageData(mukhiNumber: number) {
       orderBy: { createdAt: "desc" },
     }),
     prisma.product.findMany({
-      where: { categoryType: "RUDRAKSHA", mukhiNumber: { not: null } },
+      where: { categoryType: "RUDRAKSHA", mukhiNumber: { not: null }, isActive: true },
       distinct: ["mukhiNumber"],
       select: { mukhiNumber: true },
     }),

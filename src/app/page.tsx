@@ -54,7 +54,7 @@ function toProductCardData(
 async function getHomepageData() {
   const [bestsellers, newArrivals, testimonials] = await Promise.all([
     prisma.product.findMany({
-      where: { isBestseller: true },
+      where: { isBestseller: true, isActive: true },
       include: {
         images: { orderBy: { position: "asc" }, take: 1 },
         variants: { take: 1 },
@@ -64,6 +64,7 @@ async function getHomepageData() {
       take: 8,
     }),
     prisma.product.findMany({
+      where: { isActive: true },
       include: {
         images: { orderBy: { position: "asc" }, take: 1 },
         variants: { take: 1 },

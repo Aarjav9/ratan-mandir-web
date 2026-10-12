@@ -14,6 +14,7 @@
  */
 
 import { PrismaClient, CategoryType } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -1069,6 +1070,27 @@ async function main() {
       },
     ],
   });
+
+  // Admin login moved from a single shared ADMIN_PASSWORD to real
+  // email+password accounts (AdminUser). Seeded from env vars rather than
+  // a public signup form, since this panel is operator-only. Re-running
+  // the seed updates the password hash if ADMIN_PASSWORD changed, so
+  // rotating the password is just: change .env, re-run `npx prisma db seed`.
+  if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+    const email = process.env.ADMIN_EMAIL.toLowerCase();
+    const passwordHash = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+    await prisma.adminUser.upsert({
+      where: { email },
+      update: { passwordHash },
+      create: { name: "Admin", email, passwordHash },
+    });
+    console.log(`Seeded admin account for ${email}.`);
+  } else {
+    console.warn(
+      "ADMIN_EMAIL / ADMIN_PASSWORD not set — skipped seeding an admin account. " +
+        "Set both in .env and re-run `npx prisma db seed` to be able to log into /admin."
+    );
+  }
 
   console.log("Seed complete.");
 }

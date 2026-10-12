@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import VariantEditor, { type VariantEditorData } from "@/components/admin/VariantEditor";
+import ProductActiveToggle from "@/components/admin/ProductActiveToggle";
 import { formatInr } from "@/lib/format";
 
 type CategoryType =
@@ -31,6 +32,7 @@ interface ProductView {
   name: string;
   categoryType: CategoryType;
   basePrice: string;
+  isActive: boolean;
   images: { url: string }[];
   variants: VariantEditorData[];
 }
@@ -87,11 +89,20 @@ export default function AdminProductsPage() {
             <div className="flex flex-col gap-6">
               {categoryProducts.map((product) => (
                 <div key={product.id} className="rounded-card border border-line bg-card p-5 shadow-soft">
-                  <div className="mb-3 flex items-center justify-between">
+                  <div className="mb-3 flex items-center justify-between gap-3">
                     <h3 className="font-marcellus text-base text-ink">{product.name}</h3>
-                    <span className="text-xs font-semibold text-inkSoft">
-                      Base price: {formatInr(product.basePrice)}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-semibold text-inkSoft">
+                        Base price: {formatInr(product.basePrice)}
+                      </span>
+                      <Link
+                        href={`/admin/products/${product.id}/edit`}
+                        className="font-mulish text-xs font-bold text-maroon underline underline-offset-4 hover:text-maroonDeep"
+                      >
+                        Edit
+                      </Link>
+                      <ProductActiveToggle productId={product.id} isActive={product.isActive} />
+                    </div>
                   </div>
                   <table className="w-full text-left">
                     <thead>

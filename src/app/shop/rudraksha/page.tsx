@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default async function AllRudrakshaPage() {
   const [products, stockedMukhiRows] = await Promise.all([
     prisma.product.findMany({
-      where: { categoryType: "RUDRAKSHA" },
+      where: { categoryType: "RUDRAKSHA", isActive: true },
       include: {
         images: { orderBy: { position: "asc" }, take: 1 },
         variants: { take: 1 },
@@ -30,7 +30,7 @@ export default async function AllRudrakshaPage() {
       orderBy: { createdAt: "desc" },
     }),
     prisma.product.findMany({
-      where: { categoryType: "RUDRAKSHA", mukhiNumber: { not: null } },
+      where: { categoryType: "RUDRAKSHA", mukhiNumber: { not: null }, isActive: true },
       distinct: ["mukhiNumber"],
       select: { mukhiNumber: true },
     }),

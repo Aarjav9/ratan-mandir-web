@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     // the client-supplied price on each cart line.
     const productIds = Array.from(new Set(items.map((item) => item.productId)));
     const products = await prisma.product.findMany({
-      where: { id: { in: productIds } },
+      where: { id: { in: productIds }, isActive: true },
       include: { variants: true },
     });
     type ProductWithVariants = (typeof products)[number];

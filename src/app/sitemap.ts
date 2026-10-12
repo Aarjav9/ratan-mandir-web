@@ -7,11 +7,11 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, mukhiNumbersWithProducts] = await Promise.all([
-    prisma.product.findMany({ select: { slug: true, updatedAt: true } }),
+    prisma.product.findMany({ where: { isActive: true }, select: { slug: true, updatedAt: true } }),
     // Only mukhi pages with real products — thin/empty pages hurt SEO more
     // than they help, so unstocked mukhis (most of 1-14) are left out.
     prisma.product.findMany({
-      where: { categoryType: "RUDRAKSHA", mukhiNumber: { not: null } },
+      where: { categoryType: "RUDRAKSHA", mukhiNumber: { not: null }, isActive: true },
       distinct: ["mukhiNumber"],
       select: { mukhiNumber: true },
     }),

@@ -33,7 +33,7 @@ export default async function RudrakshaVarietyPage({ params }: VarietyPageProps)
   if (!variety) notFound();
 
   const products = await prisma.product.findMany({
-    where: variety.where,
+    where: { isActive: true, ...variety.where },
     include: {
       images: { orderBy: { position: "asc" }, take: 1 },
       variants: { take: 1 },

@@ -10,6 +10,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Admin sees every product, active or not — isActive only hides a
+  // product from the public storefront, not from here.
   const products = await prisma.product.findMany({
     include: { variants: true, images: { orderBy: { position: "asc" }, take: 1 } },
     orderBy: [{ categoryType: "asc" }, { name: "asc" }],
@@ -32,6 +34,7 @@ const createSchema = z.object({
   origin: z.string().optional(),
   badge: z.string().optional(),
   isBestseller: z.boolean().optional(),
+  isActive: z.boolean().optional(),
   images: z
     .array(z.object({ url: z.string().min(1), altText: z.string().min(1) }))
     .min(1, "At least one image is required"),
@@ -59,7 +62,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { name, description, categoryType, basePrice, mrp, origin, badge, isBestseller, images, variants } =
+  const { name, description, categoryType, basePrice, mrp, origin, badge, isBestseller, isActive, images, variants } =
     parsed.data;
 
   const baseSlug = parsed.data.slug ?? slugify(name);
@@ -81,6 +84,7 @@ export async function POST(request: NextRequest) {
       origin,
       badge,
       isBestseller: isBestseller ?? false,
+      isActive: isActive ?? true,
       images: { create: images.map((img, i) => ({ ...img, position: i })) },
       variants: { create: variants },
     },

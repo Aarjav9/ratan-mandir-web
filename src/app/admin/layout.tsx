@@ -1,10 +1,11 @@
 "use client";
 
-import { type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 const NAV_LINKS = [
+  { href: "/admin", label: "Dashboard" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/orders", label: "Orders" },
 ];
@@ -13,6 +14,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const isLoginPage = pathname === "/admin/login";
+  const [adminEmail, setAdminEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isLoginPage) return;
+    fetch("/api/admin/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { email: string } | null) => setAdminEmail(data?.email ?? null))
+      .catch(() => setAdminEmail(null));
+  }, [isLoginPage]);
 
   const handleLogout = async () => {
     await fetch("/api/admin/logout", { method: "POST" });
@@ -34,12 +44,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 key={link.href}
                 href={link.href}
                 className={`text-sm font-semibold transition-colors hover:text-maroon ${
-                  pathname.startsWith(link.href) ? "text-maroon" : "text-inkSoft"
+                  (link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href))
+                    ? "text-maroon"
+                    : "text-inkSoft"
                 }`}
               >
                 {link.label}
               </Link>
             ))}
+            {adminEmail && <span className="font-mulish text-xs text-inkSoft">{adminEmail}</span>}
             <button
               type="button"
               onClick={handleLogout}
