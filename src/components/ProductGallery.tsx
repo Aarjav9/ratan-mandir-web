@@ -8,7 +8,7 @@ export interface GalleryImage {
   altText: string;
 }
 
-const AUTOPLAY_INTERVAL_MS = 4000;
+const AUTOPLAY_INTERVAL_MS = 2000;
 
 export default function ProductGallery({ images }: { images: GalleryImage[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -83,30 +83,22 @@ export default function ProductGallery({ images }: { images: GalleryImage[] }) {
 
         {images.length > 1 && (
           <>
-            {/* Left/right halves of the image act as prev/next tap zones,
-                with a small arrow always visible so the interaction is
-                discoverable on touch devices (hover-to-reveal doesn't work
-                there). z-10 keeps these above the zoomable image itself. */}
+            {/* The entire image is tappable to change it — left half goes
+                back, right half goes forward — with no visible button
+                needed; the whole frame is the control, not just a small
+                icon in the corner. */}
             <button
               type="button"
               onClick={goToPrev}
               aria-label="Previous image"
-              className="group absolute inset-y-0 left-0 z-10 flex w-1/2 items-center justify-start pl-3"
-            >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ivory/80 text-maroon shadow-soft transition-opacity group-hover:bg-ivory">
-                ‹
-              </span>
-            </button>
+              className="absolute inset-y-0 left-0 z-10 w-1/2"
+            />
             <button
               type="button"
               onClick={goToNext}
               aria-label="Next image"
-              className="group absolute inset-y-0 right-0 z-10 flex w-1/2 items-center justify-end pr-3"
-            >
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ivory/80 text-maroon shadow-soft transition-opacity group-hover:bg-ivory">
-                ›
-              </span>
-            </button>
+              className="absolute inset-y-0 right-0 z-10 w-1/2"
+            />
           </>
         )}
       </div>

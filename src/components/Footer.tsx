@@ -65,7 +65,7 @@ function NewsletterForm() {
 export default function Footer() {
   return (
     <footer className="bg-maroonDeep text-ivory">
-      <div className="container-page grid gap-10 py-14 md:grid-cols-4">
+      <div className="container-page grid gap-10 py-14 md:grid-cols-5">
         <div>
           <span className="font-marcellus text-2xl">Ratan Mandir</span>
           <p className="mt-3 font-mulish text-sm leading-relaxed text-ivory/75">
@@ -131,8 +131,17 @@ export default function Footer() {
             </Link>
           </li>
           <li>
+            <span className="cursor-default">Contact Us</span>
+          </li>
+        </FooterColumn>
+
+        {/* All policy/legal pages live together here so they're clearly
+            visible in one place, instead of split across this column and
+            the bottom bar. */}
+        <FooterColumn title="Policies">
+          <li>
             <Link href="/shipping-policy" className="hover:text-gold">
-              Shipping &amp; Delivery
+              Shipping Policy
             </Link>
           </li>
           <li>
@@ -142,11 +151,18 @@ export default function Footer() {
           </li>
           <li>
             <Link href="/cancellation-refund-policy" className="hover:text-gold">
-              Cancellation &amp; Refund
+              Cancellation &amp; Refund Policy
             </Link>
           </li>
           <li>
-            <span className="cursor-default">Contact Us</span>
+            <Link href="/privacy-policy" className="hover:text-gold">
+              Privacy Policy
+            </Link>
+          </li>
+          <li>
+            <Link href="/terms-conditions" className="hover:text-gold">
+              Terms &amp; Conditions
+            </Link>
           </li>
         </FooterColumn>
 
@@ -192,17 +208,6 @@ export default function Footer() {
           </div>
           <div className="flex flex-col items-center gap-2 text-center font-mulish text-xs text-ivory/60 md:w-full md:flex-row md:justify-between md:text-left">
             <p>&copy; {new Date().getFullYear()} Ratan Mandir. All rights reserved.</p>
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-              <Link href="/privacy-policy" className="hover:text-gold">
-                Privacy Policy
-              </Link>
-              <Link href="/terms-conditions" className="hover:text-gold">
-                Terms of Service
-              </Link>
-              <Link href="/cancellation-refund-policy" className="hover:text-gold">
-                Cancellation &amp; Refund
-              </Link>
-            </div>
             <p>Handled with reverence, shipped with care.</p>
           </div>
         </div>
