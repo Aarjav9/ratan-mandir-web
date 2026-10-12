@@ -164,6 +164,11 @@ export default function Footer() {
               Terms &amp; Conditions
             </Link>
           </li>
+          <li>
+            <Link href="/disclaimer-policy" className="hover:text-gold">
+              Disclaimer Policy
+            </Link>
+          </li>
         </FooterColumn>
 
         <div>
